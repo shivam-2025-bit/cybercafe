@@ -1,0 +1,2304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ToolsLab — One Stop Digital Solution</title>
+  <meta name="description" content="ToolsLab is a free online platform offering PDF tools, ID card printing, resume builder, QR generator, passport photo maker, and 50+ government portal links."/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --accent: #0ea5e9;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --surface: #ffffff;
+      --surface2: #f8fafc;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --radius: 16px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: #f1f5f9; color: var(--text); line-height: 1.6; min-height: 100vh; }
+    h1,h2,h3,h4,h5,h6 { font-family: 'Syne', sans-serif; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+
+    /* ─── HEADER ─── */
+    .header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,0.96);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .header-inner {
+      max-width: 1100px; margin: 0 auto;
+      padding: 0 20px; height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .logo-mark {
+      width: 40px; height: 40px; border-radius: 12px;
+      background: linear-gradient(135deg, #2563eb, #0ea5e9);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif; font-weight: 800; color: #fff; font-size: 16px;
+      box-shadow: 0 4px 12px rgba(37,99,235,0.3);
+    }
+    .logo-text { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 20px; color: var(--text); }
+    .logo-sub { font-size: 11px; color: var(--primary); font-weight: 500; margin-top: -2px; }
+    .nav-links { display: flex; align-items: center; gap: 4px; }
+    .nav-link {
+      padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 500;
+      color: var(--text-muted); text-decoration: none; cursor: pointer; border: none;
+      background: transparent; transition: all 0.2s;
+    }
+    .nav-link:hover { color: var(--primary); background: #eff6ff; }
+    .nav-cta {
+      padding: 7px 16px; border-radius: 10px; font-size: 13px; font-weight: 600;
+      background: var(--primary); color: #fff; border: none; cursor: pointer;
+      transition: all 0.2s; text-decoration: none;
+    }
+    .nav-cta:hover { background: var(--primary-dark); box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
+    .mobile-menu-btn { display: none; padding: 8px; background: none; border: none; cursor: pointer; }
+
+    /* ─── HERO SEARCH ─── */
+    .hero {
+      background: linear-gradient(135deg, #1e40af 0%, #2563eb 50%, #0284c7 100%);
+      padding: 48px 20px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .hero-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(24px, 5vw, 40px); color: #fff; margin-bottom: 8px; position: relative; }
+    .hero-sub { color: rgba(255,255,255,0.8); font-size: 15px; margin-bottom: 28px; position: relative; }
+    .search-box {
+      position: relative; max-width: 580px; margin: 0 auto;
+    }
+    .search-icon {
+      position: absolute; left: 18px; top: 50%; transform: translateY(-50%);
+      width: 20px; height: 20px; color: #94a3b8;
+    }
+    #searchInput {
+      width: 100%; padding: 16px 20px 16px 52px;
+      border: none; border-radius: 14px; font-size: 15px;
+      background: #fff; color: var(--text);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+      font-family: 'DM Sans', sans-serif;
+      outline: none;
+    }
+    #searchInput::placeholder { color: #94a3b8; }
+    .search-stats { color: rgba(255,255,255,0.6); font-size: 12px; margin-top: 12px; position: relative; }
+
+    /* ─── ADSENSE SLOTS ─── */
+    .ad-slot {
+      max-width: 1100px; margin: 0 auto;
+      padding: 12px 20px;
+      display: flex; justify-content: center;
+    }
+    .ad-banner {
+      width: 100%; max-width: 728px; height: 90px;
+      background: linear-gradient(90deg, #f8fafc, #f1f5f9);
+      border: 2px dashed #cbd5e1; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      color: #94a3b8; font-size: 13px; font-weight: 500;
+      letter-spacing: 0.5px;
+    }
+    .ad-banner-rect {
+      width: 300px; height: 250px;
+      background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+      border: 2px dashed #cbd5e1; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      color: #94a3b8; font-size: 13px; font-weight: 500;
+      flex-shrink: 0;
+    }
+
+    /* ─── MAIN LAYOUT ─── */
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+    .main-grid { display: grid; grid-template-columns: 1fr 300px; gap: 24px; padding: 28px 0; }
+    .content-col { min-width: 0; }
+    .sidebar-col { display: flex; flex-direction: column; gap: 20px; }
+
+    /* ─── SECTIONS ─── */
+    .section { margin-bottom: 32px; }
+    .section-head {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 16px;
+    }
+    .section-bar { width: 4px; height: 24px; border-radius: 2px; flex-shrink: 0; }
+    .section-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 18px; }
+    .section-count { font-size: 12px; color: var(--text-muted); background: var(--border); padding: 2px 8px; border-radius: 20px; font-weight: 500; }
+
+    /* ─── TOOL GRID ─── */
+    .tool-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: 12px;
+    }
+    .tool-card {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: var(--radius); padding: 16px 8px;
+      cursor: pointer; text-align: center;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative; overflow: hidden;
+      text-decoration: none; display: block;
+    }
+    .tool-card::before {
+      content: ''; position: absolute; inset: 0;
+      background: var(--primary); opacity: 0; transition: opacity 0.2s;
+    }
+    .tool-card:hover { transform: translateY(-3px); border-color: var(--primary); box-shadow: 0 12px 24px rgba(37,99,235,0.1); }
+    .tool-card:hover::before { opacity: 0.03; }
+    .tool-card:active { transform: translateY(0); }
+    .tool-icon-wrap {
+      width: 52px; height: 52px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px; margin: 0 auto 10px;
+      position: relative; z-index: 1;
+    }
+    .tool-name {
+      font-size: 11.5px; font-weight: 600; color: var(--text);
+      line-height: 1.3; position: relative; z-index: 1;
+    }
+    .badge {
+      position: absolute; top: 8px; right: 8px;
+      font-size: 9px; font-weight: 700; padding: 2px 6px;
+      border-radius: 20px; letter-spacing: 0.3px;
+      text-transform: uppercase; z-index: 2;
+    }
+    .badge-new { background: #dcfce7; color: #16a34a; }
+    .badge-hot { background: #fee2e2; color: #dc2626; }
+
+    /* ─── SIDEBAR WIDGETS ─── */
+    .sidebar-widget {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: var(--radius); overflow: hidden;
+    }
+    .widget-head {
+      padding: 14px 16px; border-bottom: 1px solid var(--border);
+      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .widget-body { padding: 16px; }
+    .quick-link {
+      display: flex; align-items: center; gap-10px;
+      padding: 9px 12px; border-radius: 10px; margin-bottom: 6px;
+      background: var(--surface2); border: 1px solid var(--border);
+      cursor: pointer; transition: all 0.2s; text-decoration: none;
+      font-size: 13px; font-weight: 500; color: var(--text);
+      gap: 10px;
+    }
+    .quick-link:hover { background: #eff6ff; border-color: var(--primary); color: var(--primary); }
+    .quick-link-icon { font-size: 18px; flex-shrink: 0; }
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .stat-box {
+      background: var(--surface2); border-radius: 10px; padding: 12px;
+      text-align: center;
+    }
+    .stat-num { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 22px; color: var(--primary); }
+    .stat-label { font-size: 11px; color: var(--text-muted); font-weight: 500; margin-top: 2px; }
+
+    /* ─── MODAL ─── */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(15,23,42,0.6);
+      backdrop-filter: blur(8px);
+      display: flex; align-items: flex-start; justify-content: center;
+      padding: 5vh 16px;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal-box {
+      background: var(--surface); border-radius: 24px;
+      width: 100%; max-width: 760px;
+      max-height: 90vh; overflow-y: auto;
+      transform: scale(0.95) translateY(20px);
+      transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+      box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+    }
+    .modal-overlay.open .modal-box { transform: scale(1) translateY(0); }
+    .modal-header {
+      position: sticky; top: 0; background: rgba(255,255,255,0.96);
+      backdrop-filter: blur(12px);
+      padding: 18px 24px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      border-radius: 24px 24px 0 0; z-index: 10;
+    }
+    .modal-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 18px; }
+    .modal-close {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--surface2); border: 1.5px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.2s; color: var(--text-muted);
+      font-size: 18px; line-height: 1;
+    }
+    .modal-close:hover { background: #fee2e2; border-color: #fca5a5; color: var(--danger); }
+    .modal-body { padding: 24px; }
+
+    /* ─── FORM ELEMENTS ─── */
+    .form-group { margin-bottom: 14px; }
+    .form-label { display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+    .form-input {
+      width: 100%; padding: 10px 14px;
+      border: 1.5px solid var(--border); border-radius: 10px;
+      font-size: 14px; color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      transition: border-color 0.2s; outline: none; background: var(--surface);
+    }
+    .form-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+    textarea.form-input { resize: vertical; }
+    select.form-input { cursor: pointer; }
+    .btn {
+      padding: 11px 22px; border-radius: 12px; font-size: 14px; font-weight: 600;
+      border: none; cursor: pointer; transition: all 0.2s; font-family: 'DM Sans', sans-serif;
+      display: inline-flex; align-items: center; gap: 8px;
+    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-dark); box-shadow: 0 6px 16px rgba(37,99,235,0.3); transform: translateY(-1px); }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-secondary { background: var(--surface2); color: var(--text); border: 1.5px solid var(--border); }
+    .btn-secondary:hover { background: var(--border); }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-success { background: var(--success); color: #fff; }
+    .btn-full { width: 100%; justify-content: center; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+
+    /* ─── DROP ZONE ─── */
+    .drop-zone {
+      border: 2px dashed var(--border); border-radius: 14px;
+      padding: 36px 20px; text-align: center;
+      cursor: pointer; transition: all 0.2s; background: var(--surface2);
+    }
+    .drop-zone:hover, .drop-zone.dragover { border-color: var(--primary); background: #eff6ff; }
+    .drop-zone .dz-icon { font-size: 36px; margin-bottom: 10px; }
+    .drop-zone .dz-text { font-size: 14px; font-weight: 500; color: var(--text-muted); }
+    .drop-zone .dz-hint { font-size: 12px; color: #94a3b8; margin-top: 4px; }
+
+    /* ─── PROGRESS BAR ─── */
+    .progress-bar { height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden; margin: 8px 0; }
+    .progress-fill { height: 100%; background: var(--primary); border-radius: 3px; transition: width 0.3s; }
+
+    /* ─── FAQ ─── */
+    .faq-item { border: 1.5px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 10px; }
+    .faq-q {
+      width: 100%; display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 18px; background: var(--surface2); border: none; cursor: pointer;
+      text-align: left; font-size: 14px; font-weight: 600; color: var(--text);
+      transition: background 0.2s; font-family: 'DM Sans', sans-serif;
+    }
+    .faq-q:hover { background: #eff6ff; }
+    .faq-icon { width: 20px; height: 20px; flex-shrink: 0; transition: transform 0.3s; color: var(--text-muted); }
+    .faq-item.open .faq-icon { transform: rotate(180deg); }
+    .faq-a {
+      max-height: 0; overflow: hidden; transition: max-height 0.35s ease;
+      background: var(--surface);
+    }
+    .faq-item.open .faq-a { max-height: 300px; }
+    .faq-a-inner { padding: 14px 18px 18px; font-size: 14px; color: var(--text-muted); line-height: 1.7; }
+
+    /* ─── PAGE SYSTEM ─── */
+    .page { display: none !important; }
+    .page.active { display: block !important; }
+
+    /* ─── STATIC PAGES ─── */
+    .static-page { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+    .static-page h1 { font-size: 32px; margin-bottom: 8px; }
+    .static-page .meta { color: var(--text-muted); font-size: 14px; margin-bottom: 32px; }
+    .static-page h2 { font-size: 20px; margin: 28px 0 12px; }
+    .static-page p { font-size: 15px; line-height: 1.8; margin-bottom: 14px; color: var(--text-muted); }
+    .static-page ul { padding-left: 20px; margin-bottom: 14px; }
+    .static-page ul li { font-size: 15px; line-height: 1.8; color: var(--text-muted); margin-bottom: 4px; }
+    .contact-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .about-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 24px 0; }
+    .about-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: 14px; padding: 20px; text-align: center; }
+    .about-card .icon { font-size: 32px; margin-bottom: 10px; }
+    .about-card h4 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+    .about-card p { font-size: 13px; color: var(--text-muted); }
+
+    /* ─── FOOTER ─── */
+    .footer {
+      background: #0f172a; color: #94a3b8; padding: 48px 20px 24px;
+      margin-top: 40px;
+    }
+    .footer-inner { max-width: 1100px; margin: 0 auto; }
+    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 32px; margin-bottom: 32px; }
+    .footer-brand .logo-text { color: #fff; font-size: 22px; }
+    .footer-brand .logo-sub { color: #60a5fa; }
+    .footer-brand p { font-size: 13px; line-height: 1.7; margin-top: 12px; }
+    .footer-col h4 { color: #fff; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; margin-bottom: 14px; }
+    .footer-col a { display: block; color: #94a3b8; text-decoration: none; font-size: 13px; margin-bottom: 8px; cursor: pointer; transition: color 0.2s; }
+    .footer-col a:hover { color: #60a5fa; }
+    .footer-bottom { border-top: 1px solid #1e293b; padding-top: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+    .footer-bottom p { font-size: 12px; }
+    .footer-badges { display: flex; gap: 10px; }
+    .footer-badge { background: #1e293b; color: #94a3b8; font-size: 11px; padding: 4px 10px; border-radius: 6px; }
+
+    /* ─── WHATSAPP FLOAT ─── */
+    .wa-float {
+      position: fixed; bottom: 24px; right: 24px; z-index: 150;
+      width: 56px; height: 56px; border-radius: 50%;
+      background: #25d366; color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 20px rgba(37,211,102,0.4);
+      text-decoration: none;
+      animation: float 3s ease-in-out infinite;
+    }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+    .wa-float svg { width: 28px; height: 28px; }
+
+    /* ─── TOAST ─── */
+    .toast {
+      position: fixed; bottom: 100px; right: 24px; z-index: 300;
+      background: #0f172a; color: #fff; padding: 14px 20px;
+      border-radius: 12px; font-size: 14px; font-weight: 500;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      transform: translateY(20px); opacity: 0;
+      transition: all 0.3s; pointer-events: none;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.success { background: #064e3b; border-left: 3px solid var(--success); }
+    .toast.error { background: #7f1d1d; border-left: 3px solid var(--danger); }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 900px) {
+      .main-grid { grid-template-columns: 1fr; }
+      .sidebar-col { display: none; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 600px) {
+      .nav-links { display: none; }
+      .mobile-menu-btn { display: flex; }
+      .tool-grid { grid-template-columns: repeat(3, 1fr); }
+      .footer-grid { grid-template-columns: 1fr; }
+      .ad-banner { height: 60px; }
+      .contact-form-grid { grid-template-columns: 1fr; }
+      .about-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ─── PRINT ─── */
+    @media print {
+      .no-print { display: none !important; }
+      .modal-overlay { position: static; background: none; padding: 0; }
+      .modal-box { box-shadow: none; max-height: none; }
+    }
+
+    /* ─── ANIMATIONS ─── */
+    @keyframes slideIn { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+    .slide-in { animation: slideIn 0.4s ease forwards; }
+
+    /* ─── QR TOOL ─── */
+    #qrcode canvas, #qrcode img { border-radius: 8px; }
+
+    /* ─── PREVIEW CARDS ─── */
+    .preview-img-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 12px; }
+    .preview-img-item { position: relative; aspect-ratio: 1; border-radius: 8px; overflow: hidden; background: var(--surface2); border: 1.5px solid var(--border); }
+    .preview-img-item img { width: 100%; height: 100%; object-fit: cover; }
+    .preview-img-item .remove-btn {
+      position: absolute; top: 4px; right: 4px;
+      width: 20px; height: 20px; border-radius: 50%;
+      background: var(--danger); color: #fff;
+      border: none; cursor: pointer; font-size: 12px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ─── ID CARD PREVIEW ─── */
+    .id-card-preview {
+      width: 320px; height: 200px;
+      background: linear-gradient(135deg, #1e40af, #2563eb);
+      border-radius: 16px; padding: 20px;
+      color: #fff; position: relative; overflow: hidden;
+      box-shadow: 0 12px 32px rgba(37,99,235,0.35);
+    }
+    .id-card-preview::before {
+      content:''; position:absolute;
+      width:200px; height:200px;
+      background: rgba(255,255,255,0.07);
+      border-radius: 50%; top:-60px; right:-60px;
+    }
+
+    /* ─── RESUME PREVIEW ─── */
+    .resume-preview {
+      background: #fff; border: 1.5px solid var(--border);
+      border-radius: 12px; padding: 24px;
+      font-size: 13px; max-height: 420px; overflow-y: auto;
+    }
+    .resume-preview h2 { font-size: 20px; color: #1e40af; }
+    .resume-preview .rv-section { margin-top: 14px; }
+    .resume-preview .rv-section h3 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #94a3b8; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 8px; }
+    .resume-preview .skill-chip { display: inline-block; background: #eff6ff; color: #1d4ed8; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; margin: 2px; }
+
+    /* ─── BIODATA ─── */
+    .biodata-card {
+      background: #fff;
+      border: 3px double #9f1239;
+      border-radius: 4px; padding: 28px;
+    }
+    .biodata-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #fce7f3; font-size: 13px; }
+    .biodata-row .label { font-weight: 600; color: #9f1239; }
+
+    /* ─── POSTER ─── */
+    .poster-preview {
+      width: 100%; aspect-ratio: 3/4;
+      border-radius: 12px; overflow: hidden;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center; padding: 32px 20px;
+      color: #fff; position: relative;
+    }
+
+    /* ─── MOCK TEST ─── */
+    .option-btn {
+      width: 100%; padding: 12px 16px; border-radius: 10px;
+      border: 1.5px solid var(--border); background: var(--surface2);
+      cursor: pointer; text-align: left; font-size: 14px;
+      font-family: 'DM Sans', sans-serif; font-weight: 500;
+      display: flex; align-items: center; gap: 10px;
+      transition: all 0.2s; color: var(--text);
+    }
+    .option-btn:hover { border-color: var(--primary); background: #eff6ff; }
+    .option-btn.selected { border-color: var(--primary); background: #eff6ff; }
+    .option-btn.correct { border-color: var(--success); background: #f0fdf4; }
+    .option-btn.wrong { border-color: var(--danger); background: #fef2f2; }
+    .option-num { width: 26px; height: 26px; border-radius: 50%; background: var(--border); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header no-print">
+    <div class="header-inner">
+      <a class="logo" onclick="showPage('home')">
+        <div class="logo-mark">TL</div>
+        <div>
+          <div class="logo-text">ToolsLab</div>
+          <div class="logo-sub">by Digital Hub</div>
+        </div>
+      </a>
+      <nav class="nav-links">
+        <button class="nav-link" onclick="showPage('home')">🏠 Home</button>
+        <button class="nav-link" onclick="showPage('about')">About</button>
+        <button class="nav-link" onclick="showPage('privacy')">Privacy</button>
+        <button class="nav-link" onclick="showPage('terms')">Terms</button>
+        <button class="nav-link" onclick="showPage('contact')">Contact</button>
+        <a href="https://wa.me/911234567890" target="_blank" class="nav-cta">💬 Help</a>
+      </nav>
+      <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    </div>
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" style="display:none; padding:12px 20px 16px; border-top:1px solid var(--border); background:#fff;">
+      <button class="nav-link" style="display:block;margin-bottom:6px;text-align:left;width:100%" onclick="showPage('home');toggleMobileMenu()">🏠 Home</button>
+      <button class="nav-link" style="display:block;margin-bottom:6px;text-align:left;width:100%" onclick="showPage('about');toggleMobileMenu()">About</button>
+      <button class="nav-link" style="display:block;margin-bottom:6px;text-align:left;width:100%" onclick="showPage('privacy');toggleMobileMenu()">Privacy Policy</button>
+      <button class="nav-link" style="display:block;margin-bottom:6px;text-align:left;width:100%" onclick="showPage('terms');toggleMobileMenu()">Terms of Service</button>
+      <button class="nav-link" style="display:block;margin-bottom:6px;text-align:left;width:100%" onclick="showPage('disclaimer');toggleMobileMenu()">Disclaimer</button>
+      <button class="nav-link" style="display:block;margin-bottom:6px;text-align:left;width:100%" onclick="showPage('contact');toggleMobileMenu()">Contact</button>
+    </div>
+  </header>
+
+  <!-- ═══════════ HOME PAGE ═══════════ -->
+  <div id="page-home" class="page active">
+
+    <!-- Hero / Search -->
+    <div class="hero no-print">
+      <h1 class="hero-title">⚡ ToolsLab — One Stop Digital Solution</h1>
+      <p class="hero-sub">PDF Tools · ID Printing · Resume Builder · Government Portals · and more</p>
+      <div class="search-box">
+        <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        <input type="text" id="searchInput" placeholder="Search tools... (PDF, Resume, QR, Aadhaar...)"/>
+      </div>
+      <div class="search-stats">60+ tools &amp; portal links · 100% browser-based · Your data stays private</div>
+    </div>
+
+    <!-- Top Ad Banner -->
+    <div class="ad-slot no-print">
+      <!-- Google AdSense: Replace data-ad-client and data-ad-slot with your values -->
+      <!-- <ins class="adsbygoogle" style="display:inline-block;width:728px;height:90px"
+           data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="XXXXXXXXXX"></ins>
+      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script> -->
+      <div class="ad-banner">Advertisement · Google AdSense (728×90)</div>
+    </div>
+
+    <div class="container">
+      <div class="main-grid">
+
+        <!-- LEFT: Tool Sections -->
+        <div class="content-col" id="searchResults">
+
+          <!-- Essential & Services -->
+          <div class="section" data-section="essential">
+            <div class="section-head">
+              <div class="section-bar" style="background:#3b82f6"></div>
+              <span class="section-title">Essential &amp; Services</span>
+              <span class="section-count" id="cnt-essential">10</span>
+            </div>
+            <div class="tool-grid" id="grid-essential"></div>
+          </div>
+
+          <!-- Mid Ad -->
+          <div class="ad-slot no-print" style="padding:8px 0; margin-bottom:24px;">
+            <!-- <ins class="adsbygoogle" ...></ins> -->
+            <div class="ad-banner" style="max-width:100%">Advertisement · Google AdSense (Responsive)</div>
+          </div>
+
+          <!-- Creative Design -->
+          <div class="section" data-section="creative">
+            <div class="section-head">
+              <div class="section-bar" style="background:#ec4899"></div>
+              <span class="section-title">Creative Design Studio</span>
+              <span class="section-count" id="cnt-creative">6</span>
+            </div>
+            <div class="tool-grid" id="grid-creative"></div>
+          </div>
+
+          <!-- PDF Tools -->
+          <div class="section" data-section="pdf">
+            <div class="section-head">
+              <div class="section-bar" style="background:#f97316"></div>
+              <span class="section-title">Smart PDF &amp; Image Tools</span>
+              <span class="section-count" id="cnt-pdf">6</span>
+            </div>
+            <div class="tool-grid" id="grid-pdf"></div>
+          </div>
+
+          <!-- Mid Ad 2 -->
+          <div class="ad-slot no-print" style="padding:8px 0; margin-bottom:24px;">
+            <div class="ad-banner" style="max-width:100%">Advertisement · Google AdSense (Responsive)</div>
+          </div>
+
+          <!-- Card Printing -->
+          <div class="section" data-section="cards">
+            <div class="section-head">
+              <div class="section-bar" style="background:#8b5cf6"></div>
+              <span class="section-title">Card Printing Services</span>
+              <span class="section-count" id="cnt-cards">7</span>
+            </div>
+            <div class="tool-grid" id="grid-cards"></div>
+          </div>
+
+          <!-- Portal Service -->
+          <div class="section" data-section="portal">
+            <div class="section-head">
+              <div class="section-bar" style="background:#10b981"></div>
+              <span class="section-title">Portal Services</span>
+              <span class="section-count" id="cnt-portal">35</span>
+            </div>
+            <div class="tool-grid" id="grid-portal"></div>
+          </div>
+
+          <!-- Why Choose -->
+          <div style="background:#fff;border:1.5px solid var(--border);border-radius:20px;padding:32px;margin-bottom:28px;">
+            <h2 style="text-align:center;font-size:22px;margin-bottom:8px;">Why Choose ToolsLab?</h2>
+            <p style="text-align:center;color:var(--text-muted);font-size:14px;max-width:500px;margin:0 auto 28px;">Everything you need for daily digital work — free, fast, and private.</p>
+            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">
+              <div style="background:var(--surface2);border-radius:14px;padding:20px;text-align:center;border:1.5px solid var(--border);">
+                <div style="font-size:28px;margin-bottom:8px;">⚡</div>
+                <div style="font-weight:700;font-family:'Syne',sans-serif;margin-bottom:4px;">Simple & Fast</div>
+                <div style="font-size:13px;color:var(--text-muted);">Instant results, no waiting</div>
+              </div>
+              <div style="background:var(--surface2);border-radius:14px;padding:20px;text-align:center;border:1.5px solid var(--border);">
+                <div style="font-size:28px;margin-bottom:8px;">📦</div>
+                <div style="font-weight:700;font-family:'Syne',sans-serif;margin-bottom:4px;">All In One Place</div>
+                <div style="font-size:13px;color:var(--text-muted);">60+ tools under one roof</div>
+              </div>
+              <div style="background:var(--surface2);border-radius:14px;padding:20px;text-align:center;border:1.5px solid var(--border);">
+                <div style="font-size:28px;margin-bottom:8px;">🛡️</div>
+                <div style="font-weight:700;font-family:'Syne',sans-serif;margin-bottom:4px;">Safe & Private</div>
+                <div style="font-size:13px;color:var(--text-muted);">Files never leave your browser</div>
+              </div>
+              <div style="background:var(--surface2);border-radius:14px;padding:20px;text-align:center;border:1.5px solid var(--border);">
+                <div style="font-size:28px;margin-bottom:8px;">💎</div>
+                <div style="font-weight:700;font-family:'Syne',sans-serif;margin-bottom:4px;">Free Forever</div>
+                <div style="font-size:13px;color:var(--text-muted);">Core tools always free</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- FAQ -->
+          <div style="background:#fff;border:1.5px solid var(--border);border-radius:20px;padding:32px;margin-bottom:28px;">
+            <h2 style="text-align:center;font-size:22px;margin-bottom:24px;">Frequently Asked Questions</h2>
+            <div id="faqContainer"></div>
+          </div>
+
+          <!-- Bottom Ad -->
+          <div class="ad-slot no-print" style="padding:8px 0 20px;">
+            <div class="ad-banner" style="max-width:100%">Advertisement · Google AdSense (Responsive)</div>
+          </div>
+
+        </div>
+
+        <!-- RIGHT: Sidebar -->
+        <aside class="sidebar-col no-print">
+
+          <!-- Sidebar Ad -->
+          <div style="display:flex;justify-content:center;">
+            <!-- <ins class="adsbygoogle" ...></ins> -->
+            <div class="ad-banner-rect">Advertisement<br>300×250</div>
+          </div>
+
+          <!-- Stats -->
+          <div class="sidebar-widget">
+            <div class="widget-head">📊 Platform Stats</div>
+            <div class="widget-body">
+              <div class="stats-grid">
+                <div class="stat-box"><div class="stat-num">60+</div><div class="stat-label">Total Tools</div></div>
+                <div class="stat-box"><div class="stat-num">35+</div><div class="stat-label">Gov Portals</div></div>
+                <div class="stat-box"><div class="stat-num">100%</div><div class="stat-label">Free Core</div></div>
+                <div class="stat-box"><div class="stat-num">0</div><div class="stat-label">Data Uploads</div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Links -->
+          <div class="sidebar-widget">
+            <div class="widget-head">🔗 Quick Access</div>
+            <div class="widget-body" style="padding:12px;">
+              <a class="quick-link" href="https://uidai.gov.in/" target="_blank"><span class="quick-link-icon">🎯</span> Aadhaar Portal</a>
+              <a class="quick-link" href="https://www.incometaxindiaefiling.gov.in/" target="_blank"><span class="quick-link-icon">🧾</span> PAN Card</a>
+              <a class="quick-link" href="https://www.nvsp.in/" target="_blank"><span class="quick-link-icon">🗳️</span> Voter ID</a>
+              <a class="quick-link" href="https://parivahan.gov.in/" target="_blank"><span class="quick-link-icon">🚗</span> Driving Licence</a>
+              <a class="quick-link" href="https://pmjay.gov.in/" target="_blank"><span class="quick-link-icon">🏥</span> Ayushman Bharat</a>
+              <a class="quick-link" href="https://scholarships.gov.in/" target="_blank"><span class="quick-link-icon">🎓</span> Scholarship</a>
+            </div>
+          </div>
+
+          <!-- Sidebar Ad 2 -->
+          <div style="display:flex;justify-content:center;">
+            <div class="ad-banner-rect">Advertisement<br>300×250</div>
+          </div>
+
+          <!-- Pages -->
+          <div class="sidebar-widget">
+            <div class="widget-head">📄 Important Pages</div>
+            <div class="widget-body" style="padding:12px;">
+              <a class="quick-link" onclick="showPage('about')"><span class="quick-link-icon">ℹ️</span> About Us</a>
+              <a class="quick-link" onclick="showPage('privacy')"><span class="quick-link-icon">🔒</span> Privacy Policy</a>
+              <a class="quick-link" onclick="showPage('terms')"><span class="quick-link-icon">📋</span> Terms of Service</a>
+              <a class="quick-link" onclick="showPage('disclaimer')"><span class="quick-link-icon">⚠️</span> Disclaimer</a>
+              <a class="quick-link" onclick="showPage('contact')"><span class="quick-link-icon">✉️</span> Contact Us</a>
+            </div>
+          </div>
+        </aside>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ ABOUT PAGE ═══════════ -->
+  <div id="page-about" class="page">
+    <div class="ad-slot no-print"><div class="ad-banner">Advertisement · Google AdSense (728×90)</div></div>
+    <div class="static-page">
+      <h1>About ToolsLab</h1>
+      <p class="meta">Your trusted free digital toolkit — built for every Indian citizen by Digital Hub</p>
+
+      <p>Welcome to <strong>ToolsLab</strong>, a free and comprehensive online platform developed and maintained by <strong>Digital Hub</strong>. Our mission is simple: to make everyday digital tasks faster, easier, and more accessible for every person in India — whether you are a student preparing a resume for your first job interview, a small business owner who needs a quick professional poster, a shopkeeper who wants to print an ID card layout, or a citizen who needs to reach a government portal quickly.</p>
+
+      <p>In today's fast-moving digital world, people often struggle to find the right tools — they either require expensive software, complicated installations, or force you to upload sensitive personal documents to unknown servers. ToolsLab solves all of these problems. Every tool on our platform runs entirely within your web browser using modern JavaScript technology. This means your files, photos, and personal information <strong>never leave your device</strong>. There is no registration required, no subscription fee for core tools, and no data collection.</p>
+
+      <h2>Our Story</h2>
+      <p>ToolsLab was founded by the team at <strong>Digital Hub</strong> after realizing that millions of Indians, especially in tier-2 and tier-3 cities, lacked access to simple, reliable digital tools. Common service center tasks — such as printing Aadhaar card layouts, creating passport-size photos, converting images to PDF, or building a quick resume — either required expensive software or meant visiting a cyber café. We decided to change that by building a single, powerful, free platform accessible from any device with a browser — including smartphones.</p>
+
+      <p>Since our launch, ToolsLab has grown to offer <strong>60+ tools</strong> across five major categories, along with direct links to over <strong>35 official Indian government portals</strong>. We continuously expand our tool library based on real feedback from our users across India.</p>
+
+      <div class="about-grid">
+        <div class="about-card"><div class="icon">🎯</div><h4>Our Mission</h4><p>To make digital services simple, free, and accessible to every Indian regardless of technical skills or location.</p></div>
+        <div class="about-card"><div class="icon">🛡️</div><h4>Privacy First</h4><p>All file and document processing happens 100% in your browser. We never upload, store, or share your data.</p></div>
+        <div class="about-card"><div class="icon">🚀</div><h4>Always Growing</h4><p>New tools added every month based on real user needs and suggestions from our community.</p></div>
+      </div>
+
+      <h2>What We Offer</h2>
+      <p>ToolsLab is divided into five powerful categories, each designed to serve a specific set of everyday digital needs:</p>
+      <ul>
+        <li><strong>Essential &amp; Services:</strong> Resume/CV builder, passport photo layout, photo resize and crop, payment QR code generator, mock tests, and more.</li>
+        <li><strong>Creative Design Studio:</strong> Pro resume maker, marriage biodata creator, professional ID card designer, poster and banner maker, application letter generator, and shop promotion designer.</li>
+        <li><strong>Smart PDF &amp; Image Tools:</strong> Convert JPG/PNG images to PDF, merge multiple PDFs into one, delete individual pages from a PDF, and convert PNG images to JPEG — all in your browser without any upload.</li>
+        <li><strong>Card Printing Services:</strong> Print-ready card layout templates for Aadhaar, Voter ID, Driving Licence, Health cards, Tax ID, School/College ID, and Food Subsidy cards.</li>
+        <li><strong>Government Portal Links:</strong> 35+ curated direct links to official Indian government websites including UIDAI, NVSP, EPFO, IRCTC, PMJAY, PM Kisan, Passport Seva, GST, and many more.</li>
+      </ul>
+
+      <h2>Why Trust ToolsLab?</h2>
+      <p>We understand that trust is everything when it comes to handling personal documents and data. Here is why thousands of users rely on ToolsLab every day:</p>
+      <ul>
+        <li><strong>Zero server uploads:</strong> PDF and image processing is done locally in your browser. We have no access to your files.</li>
+        <li><strong>No account required:</strong> Use any tool instantly without signing up or logging in.</li>
+        <li><strong>Ad-supported free access:</strong> ToolsLab is funded by non-intrusive Google AdSense advertisements, allowing us to keep all core tools completely free for users.</li>
+        <li><strong>Mobile friendly:</strong> All tools are optimized for smartphones and tablets, not just desktops.</li>
+        <li><strong>No hidden charges:</strong> We are transparent about what is free and what may be premium in the future.</li>
+        <li><strong>Regular updates:</strong> Our team at Digital Hub actively maintains and improves the platform.</li>
+      </ul>
+
+      <h2>Our Values</h2>
+      <p>At Digital Hub, we are guided by three core values in everything we build:</p>
+      <ul>
+        <li><strong>Accessibility:</strong> Good technology should work for everyone, not just those with expensive devices or fast internet.</li>
+        <li><strong>Transparency:</strong> We are honest about how our platform works, how it is funded, and what data (if any) we collect.</li>
+        <li><strong>Community:</strong> ToolsLab grows because of its users. We actively listen to feedback and prioritize features that help real people solve real problems.</li>
+      </ul>
+
+      <h2>Our Team</h2>
+      <p>ToolsLab is built and maintained by the passionate team at <strong>Digital Hub</strong>, a technology and digital services company dedicated to creating practical, accessible web tools for Indian users. Our team includes web developers, UI/UX designers, content writers, and digital literacy advocates who share a common goal: to simplify the digital lives of everyday Indians.</p>
+
+      <h2>Get in Touch</h2>
+      <p>We love hearing from our users. Whether you have a tool suggestion, found a bug, want to collaborate, or just want to say hello — please reach out. You can use our <button onclick="showPage('contact')" style="color:var(--primary);background:none;border:none;cursor:pointer;font-weight:600;font-size:15px;">Contact Form</button>, drop us an email at <strong>toolslab@digitalhub.in</strong>, or message us on WhatsApp at <strong>+91 12345 67890</strong>. We respond within 24 hours on working days.</p>
+    </div>
+    <div class="ad-slot no-print"><div class="ad-banner">Advertisement · Google AdSense (728×90)</div></div>
+  </div>
+
+  <!-- ═══════════ PRIVACY PAGE ═══════════ -->
+  <div id="page-privacy" class="page">
+    <div class="ad-slot no-print"><div class="ad-banner">Advertisement · Google AdSense (728×90)</div></div>
+    <div class="static-page">
+      <h1>Privacy Policy</h1>
+      <p class="meta">Last updated: May 1, 2025 &nbsp;·&nbsp; Effective immediately &nbsp;·&nbsp; Operated by Digital Hub</p>
+
+      <p>Welcome to <strong>ToolsLab</strong>, operated by <strong>Digital Hub</strong> ("we", "us", or "our"). We are deeply committed to protecting your privacy and handling your personal information with complete transparency. This Privacy Policy describes in detail what information we collect, how we collect it, how we use it, how we protect it, and what rights you have regarding your information when you visit <strong>toolslab.digitalhub.in</strong> (the "Website") and use any of our services or tools.</p>
+
+      <p>By accessing or using ToolsLab, you agree to the terms of this Privacy Policy. If you do not agree with any part of this policy, please discontinue use of the Website. We encourage you to read this policy carefully and contact us if you have any questions.</p>
+
+      <h2>1. Who We Are</h2>
+      <p>ToolsLab is a free, browser-based digital productivity platform created by <strong>Digital Hub</strong>, a technology company based in India. We provide tools for PDF conversion, image editing, resume building, ID card printing, QR code generation, and access to government portal links. Our platform is designed for individuals, students, professionals, and small business owners across India.</p>
+      <p><strong>Contact Information:</strong><br>
+      Digital Hub<br>
+      Email: toolslab@digitalhub.in<br>
+      WhatsApp: +91 12345 67890<br>
+      Address: India</p>
+
+      <h2>2. What Information We Collect</h2>
+      <p>We collect only the minimum information necessary to operate and improve our website. Here is a detailed breakdown:</p>
+
+      <p><strong>a) Automatically Collected Technical Information:</strong><br>
+      When you visit ToolsLab, our web server and third-party analytics tools (such as Google Analytics) may automatically collect certain technical information including: your IP address (anonymized where possible), browser type and version, operating system, device type (mobile/desktop/tablet), referring website URL, pages visited on our website, time spent on each page, date and time of visit, and general geographic location (country/region level only). This information is used solely to understand how users interact with our website so we can improve performance and user experience.</p>
+
+      <p><strong>b) Information You Voluntarily Provide:</strong><br>
+      We do not require you to create an account or log in to use any tool on ToolsLab. The only time we collect personal information you directly provide is if you use our Contact Form, in which case we collect your name, email address, and the content of your message. This information is used solely to respond to your inquiry.</p>
+
+      <p><strong>c) File and Document Data:</strong><br>
+      This is the most important point for our users: <strong>all file processing on ToolsLab happens entirely within your web browser</strong>. When you use tools such as JPG to PDF converter, PDF merger, PNG to JPG converter, resume builder, ID card maker, or passport photo tool — your files, images, and typed content are processed locally on your device using JavaScript. No files, documents, photos, or personal information entered into any tool are ever transmitted to our servers. We have zero access to your documents.</p>
+
+      <p><strong>d) Cookies and Tracking Technologies:</strong><br>
+      We use cookies and similar tracking technologies for the following purposes: (i) to remember your preferences and settings, (ii) to enable Google AdSense to display relevant advertisements, and (iii) to collect anonymous usage analytics via Google Analytics. You can manage or disable cookies through your browser settings at any time, though doing so may affect certain website functionality.</p>
+
+      <h2>3. How We Use Your Information</h2>
+      <p>We use the information we collect for the following specific purposes:</p>
+      <ul>
+        <li>To operate, maintain, and improve the ToolsLab website and all tools</li>
+        <li>To monitor website performance, identify technical issues, and fix bugs</li>
+        <li>To understand how users discover and use our tools so we can add more useful features</li>
+        <li>To respond to messages, support requests, and feedback submitted via our Contact Form</li>
+        <li>To display relevant, non-intrusive advertisements through Google AdSense to fund the free operation of this platform</li>
+        <li>To comply with applicable laws and regulations</li>
+        <li>To detect and prevent fraudulent, abusive, or illegal use of our website</li>
+      </ul>
+      <p>We do <strong>not</strong> sell, rent, or trade your personal information to any third party for marketing purposes. We do not use your information to send unsolicited promotional emails or messages.</p>
+
+      <h2>4. Google AdSense and Third-Party Advertising</h2>
+      <p>ToolsLab uses <strong>Google AdSense</strong>, a third-party advertising service operated by Google LLC, to display advertisements on our website. These ads help us fund the platform and keep all core tools free for users. Here is what you need to know about AdSense on our site:</p>
+      <ul>
+        <li>Google AdSense uses cookies to serve ads based on a user's prior visits to our website or other websites on the internet.</li>
+        <li>Google's use of advertising cookies enables it and its partners to serve personalized ads to our users.</li>
+        <li>We display advertisements in clearly designated ad spaces. Our editorial content is completely independent from advertisers.</li>
+        <li>We do not allow Google to collect personal information beyond what is disclosed in their own privacy policy.</li>
+        <li>We fully comply with Google AdSense Program Policies and do not engage in any deceptive practices.</li>
+        <li>We do not click on our own ads or encourage others to do so.</li>
+        <li>Our content is original, useful, and created for human readers — not for search engines or ad revenue manipulation.</li>
+      </ul>
+      <p>You can opt out of personalized advertising by Google by visiting <a href="https://www.google.com/settings/ads" target="_blank" style="color:var(--primary);font-weight:600;">Google Ads Settings</a> or by visiting <a href="https://www.aboutads.info/choices/" target="_blank" style="color:var(--primary);font-weight:600;">aboutads.info</a>. You can also use the <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" style="color:var(--primary);font-weight:600;">Google Analytics Opt-out Browser Add-on</a> to prevent your data from being used by Google Analytics.</p>
+
+      <h2>5. Google Analytics</h2>
+      <p>We use Google Analytics to understand how visitors interact with our website. Google Analytics collects anonymized data such as page views, session duration, traffic sources, and device type. This data is aggregated and does not personally identify you. Google Analytics data is retained for 26 months by default. You can opt out using the Google Analytics browser add-on linked above.</p>
+
+      <h2>6. Cookies Policy</h2>
+      <p>We use the following types of cookies on ToolsLab:</p>
+      <ul>
+        <li><strong>Essential Cookies:</strong> Required for the website to function. Cannot be disabled.</li>
+        <li><strong>Analytics Cookies:</strong> Set by Google Analytics to help us understand website usage. Can be disabled via browser settings or opt-out tools.</li>
+        <li><strong>Advertising Cookies:</strong> Set by Google AdSense to display relevant ads. Can be managed at <a href="https://www.google.com/settings/ads" target="_blank" style="color:var(--primary);">Google Ads Settings</a>.</li>
+        <li><strong>Preference Cookies:</strong> Remember your settings and choices on our website.</li>
+      </ul>
+      <p>Most browsers allow you to view, manage, delete, and block cookies via their settings. Note that blocking all cookies may affect your ability to use some features of ToolsLab.</p>
+
+      <h2>7. Third-Party Links and External Portals</h2>
+      <p>ToolsLab contains links to external websites, particularly official Indian government portals such as UIDAI (Aadhaar), NVSP (Voter ID), IRCTC, EPFO, and others. When you click these links, you leave ToolsLab and are subject to the privacy policies and terms of those external websites. We are not responsible for the content, privacy practices, or data handling of any external website. We strongly encourage you to read the privacy policy of any external site you visit.</p>
+
+      <h2>8. Data Security</h2>
+      <p>We take the security of your information seriously and implement appropriate technical and organizational measures to protect it. Since all file processing tools on ToolsLab operate entirely client-side (in your browser), your documents are never transmitted over the internet to our servers. For contact form submissions and analytics data, we rely on industry-standard security protocols including HTTPS encryption for all data in transit. However, please note that no method of transmission over the internet is 100% secure, and we cannot guarantee absolute security of data transmitted to us.</p>
+
+      <h2>9. Data Retention</h2>
+      <p>We retain contact form submissions (name, email, message) only as long as necessary to respond to your inquiry, typically no longer than 90 days. Analytics data collected by Google Analytics is retained for 26 months. Advertising-related data managed by Google AdSense is subject to Google's own data retention policies. We do not retain any file data since files are never uploaded to our servers.</p>
+
+      <h2>10. Children's Privacy</h2>
+      <p>ToolsLab is not directed to children under the age of 13. We do not knowingly collect, solicit, or process personal information from children under 13 years of age. If you are a parent or guardian and believe your child has provided us with personal information, please contact us immediately at toolslab@digitalhub.in and we will take prompt steps to delete such information. If you are under 13, please do not use this website or provide any personal information.</p>
+
+      <h2>11. Your Rights</h2>
+      <p>Depending on your location, you may have the following rights regarding your personal information:</p>
+      <ul>
+        <li><strong>Right to Access:</strong> You may request a copy of the personal information we hold about you.</li>
+        <li><strong>Right to Correction:</strong> You may request that we correct inaccurate or incomplete information.</li>
+        <li><strong>Right to Deletion:</strong> You may request that we delete your personal information, subject to certain legal obligations.</li>
+        <li><strong>Right to Object:</strong> You may object to certain types of data processing, including processing for advertising purposes.</li>
+        <li><strong>Right to Opt-Out of Advertising:</strong> You can opt out of personalized advertising as described in Section 4 above.</li>
+      </ul>
+      <p>To exercise any of these rights, please contact us at toolslab@digitalhub.in. We will respond within 30 days.</p>
+
+      <h2>12. Changes to This Privacy Policy</h2>
+      <p>We may update this Privacy Policy from time to time to reflect changes in our practices, technology, legal requirements, or for other operational reasons. When we make changes, we will update the "Last updated" date at the top of this page. For significant changes, we may also add a prominent notice on our website homepage. We encourage you to review this Privacy Policy periodically to stay informed about how we are protecting your information. Your continued use of ToolsLab after any changes constitutes your acceptance of the updated policy.</p>
+
+      <h2>13. Contact Us About This Policy</h2>
+      <p>If you have any questions, concerns, or complaints about this Privacy Policy or our data practices, please do not hesitate to contact us:</p>
+      <ul>
+        <li><strong>Email:</strong> toolslab@digitalhub.in</li>
+        <li><strong>WhatsApp:</strong> +91 12345 67890 (Mon–Sat, 10am–7pm IST)</li>
+        <li><strong>Contact Form:</strong> <button onclick="showPage('contact')" style="color:var(--primary);background:none;border:none;cursor:pointer;font-weight:600;font-size:15px;">Click here</button></li>
+      </ul>
+    </div>
+    <div class="ad-slot no-print"><div class="ad-banner">Advertisement · Google AdSense (728×90)</div></div>
+  </div>
+
+  <!-- ═══════════ TERMS PAGE ═══════════ -->
+  <div id="page-terms" class="page">
+    <div class="ad-slot no-print"><div class="ad-banner">Advertisement · Google AdSense (728×90)</div></div>
+    <div class="static-page">
+      <h1>Terms of Service</h1>
+      <p class="meta">Last updated: May 1, 2025 &nbsp;·&nbsp; Please read carefully before using ToolsLab &nbsp;·&nbsp; Operated by Digital Hub</p>
+
+      <p>These Terms of Service ("Terms") constitute a legally binding agreement between you ("User", "you", or "your") and <strong>Digital Hub</strong> ("we", "us", or "our"), the operator of <strong>ToolsLab</strong> at toolslab.digitalhub.in ("the Website"). By accessing, browsing, or using any part of this Website or any tools or services provided on it, you acknowledge that you have read, understood, and agree to be bound by these Terms. If you do not agree with any part of these Terms, you must immediately stop using the Website.</p>
+
+      <h2>1. Description of Service</h2>
+      <p>ToolsLab is a free, browser-based digital productivity platform that provides online tools including but not limited to: PDF conversion and editing tools, image processing tools, resume and biodata creators, ID card and poster design tools, QR code generators, mock test interfaces, and curated links to official Indian government portals. All core tools are provided free of charge and operate entirely within the user's web browser without requiring any files to be uploaded to our servers.</p>
+      <p>Digital Hub reserves the right to modify, suspend, or discontinue any tool, feature, or service at any time without prior notice. We are not liable to you or any third party for any modification, suspension, or discontinuation of services.</p>
+
+      <h2>2. Acceptance of Terms</h2>
+      <p>By using ToolsLab, you confirm that: (a) you are at least 13 years of age, or if under 18, you have obtained consent from a parent or legal guardian; (b) you have the legal capacity to enter into a binding agreement; (c) you will use the Website only for lawful purposes; and (d) your use of the Website does not violate any applicable laws or regulations in your jurisdiction.</p>
+
+      <h2>3. Permitted Uses</h2>
+      <p>You are permitted to use ToolsLab for the following lawful purposes:</p>
+      <ul>
+        <li>Converting personal image files (JPG, PNG) to PDF documents for personal or professional use</li>
+        <li>Merging, editing, or modifying your own PDF documents using our browser-based tools</li>
+        <li>Creating resume, biodata, and application letter documents for personal career use</li>
+        <li>Designing ID card, poster, and promotional material layouts for personal or small business use</li>
+        <li>Generating QR codes for personal or business payment collection via UPI</li>
+        <li>Accessing links to official Indian government portals for legitimate civic and administrative purposes</li>
+        <li>Taking mock tests for personal learning and exam preparation</li>
+        <li>Creating passport-size photo layouts for personal printing purposes</li>
+        <li>Resizing and converting personal images for everyday use</li>
+      </ul>
+
+      <h2>4. Prohibited Uses</h2>
+      <p>You agree that you will NOT use ToolsLab for any of the following prohibited activities:</p>
+      <ul>
+        <li>Creating, distributing, or using fraudulent, forged, or counterfeit identity documents of any kind</li>
+        <li>Using card print layouts (Aadhaar, Voter ID, Driving Licence, etc.) as genuine government-issued documents or misrepresenting them as authentic</li>
+        <li>Engaging in any activity that violates applicable Indian laws or the laws of your country</li>
+        <li>Uploading, processing, or generating content that is defamatory, obscene, pornographic, hateful, or discriminatory</li>
+        <li>Impersonating any individual, organization, or government authority</li>
+        <li>Attempting to gain unauthorized access to any part of our Website or systems</li>
+        <li>Reverse-engineering, disassembling, or attempting to derive the source code of any portion of the Website</li>
+        <li>Using automated tools, bots, scrapers, or scripts to access or interact with the Website without our prior written permission</li>
+        <li>Interfering with or disrupting the integrity, availability, or performance of the Website</li>
+        <li>Collecting, harvesting, or compiling user data from the Website without authorization</li>
+        <li>Using the Website to infringe upon the intellectual property rights of any third party</li>
+        <li>Engaging in any conduct that could damage the reputation of ToolsLab or Digital Hub</li>
+      </ul>
+
+      <h2>5. Intellectual Property Rights</h2>
+      <p>All content, design elements, source code, graphics, icons, text, tool interfaces, and branding on ToolsLab — including the ToolsLab name and Digital Hub name and logo — are the exclusive property of Digital Hub and are protected under the Copyright Act of India, 1957, and other applicable intellectual property laws. You are granted a limited, non-exclusive, non-transferable, revocable license to access and use the Website for personal, non-commercial purposes in accordance with these Terms.</p>
+      <p>You may not reproduce, duplicate, copy, sell, resell, republish, distribute, modify, create derivative works of, or commercially exploit any portion of the Website without our prior express written permission. You may share links to our Website freely.</p>
+
+      <h2>6. User-Generated Content</h2>
+      <p>When you use our tools to create documents, resumes, ID cards, posters, or any other content, that content belongs to you. We do not claim any ownership over content you create using our tools. However, by using our tools, you confirm that any content you create does not violate the rights of any third party, does not contain illegal material, and that you are solely responsible for the content you generate and how you use it.</p>
+
+      <h2>7. Third-Party Links and Government Portals</h2>
+      <p>ToolsLab provides links to official Indian government portals and other third-party websites as a convenience to our users. These links are provided purely for informational and navigational purposes. We do not control, endorse, or guarantee the accuracy, completeness, or availability of any content on these external websites. Your use of any linked website is subject to that website's own terms of service and privacy policy. We are not liable for any loss or damage arising from your use of any external website accessed via ToolsLab.</p>
+
+      <h2>8. Advertisements</h2>
+      <p>ToolsLab displays third-party advertisements through Google AdSense to fund the free operation of this platform. Advertisements are clearly labelled and separated from editorial content. We do not endorse any products or services advertised on our website. We are not responsible for the content, accuracy, or safety of any advertised product or service. Your interactions with advertisers found on or through ToolsLab are solely between you and the advertiser.</p>
+
+      <h2>9. Disclaimer of Warranties</h2>
+      <p>ToolsLab and all tools, content, and services provided on it are made available on an "as is" and "as available" basis, without any warranties of any kind, either express or implied. To the fullest extent permitted by applicable law, Digital Hub expressly disclaims all warranties, including but not limited to: implied warranties of merchantability, fitness for a particular purpose, and non-infringement. We do not warrant that the Website will be uninterrupted, error-free, virus-free, or that defects will be corrected. We do not guarantee the accuracy, completeness, or usefulness of any content or tool output.</p>
+
+      <h2>10. Limitation of Liability</h2>
+      <p>To the maximum extent permitted by applicable law, Digital Hub, its directors, employees, partners, agents, suppliers, and affiliates shall not be liable for any indirect, incidental, special, consequential, or punitive damages, including but not limited to: loss of data, loss of profits, loss of goodwill, service interruption, computer damage or system failure, or the cost of substitute services, arising out of or in connection with your use or inability to use ToolsLab or any content, tool, or service provided on the Website, even if we have been advised of the possibility of such damages. Our total cumulative liability to you for all claims arising from your use of the Website shall not exceed INR 500 (five hundred rupees).</p>
+
+      <h2>11. Indemnification</h2>
+      <p>You agree to defend, indemnify, and hold harmless Digital Hub and its officers, directors, employees, agents, and partners from and against any and all claims, liabilities, damages, losses, costs, and expenses (including reasonable legal fees) arising out of or relating to: (a) your use of ToolsLab; (b) your violation of these Terms; (c) your violation of any rights of a third party; or (d) any content you create, share, or use in connection with our tools.</p>
+
+      <h2>12. Privacy</h2>
+      <p>Your use of ToolsLab is also governed by our <button onclick="showPage('privacy')" style="color:var(--primary);background:none;border:none;cursor:pointer;font-weight:600;font-size:15px;">Privacy Policy</button>, which is incorporated into these Terms by reference. By using the Website, you also agree to the terms of our Privacy Policy.</p>
+
+      <h2>13. Governing Law and Jurisdiction</h2>
+      <p>These Terms of Service shall be governed by and construed in accordance with the laws of India, without regard to conflict of law principles. Any disputes, claims, or controversies arising out of or related to these Terms or your use of ToolsLab shall be subject to the exclusive jurisdiction of the competent courts located in India. You hereby consent to the personal jurisdiction of such courts and waive any objection to such jurisdiction or venue.</p>
+
+      <h2>14. Severability</h2>
+      <p>If any provision of these Terms is found by a court of competent jurisdiction to be invalid, illegal, or unenforceable, that provision will be modified to the minimum extent necessary to make it enforceable, or if modification is not possible, it will be severed from these Terms. The remaining provisions will continue in full force and effect.</p>
+
+      <h2>15. Entire Agreement</h2>
+      <p>These Terms of Service, together with our Privacy Policy and Disclaimer, constitute the entire agreement between you and Digital Hub with respect to your use of ToolsLab and supersede all prior agreements, understandings, and communications between the parties regarding the subject matter herein.</p>
+
+      <h2>16. Modifications to Terms</h2>
+      <p>Digital Hub reserves the right to modify or update these Terms of Service at any time at its sole discretion. Any changes will be effective immediately upon posting the updated Terms on this page, along with an updated "Last updated" date. We may also notify users of significant changes via a notice on our homepage. Your continued use of ToolsLab after any changes are posted constitutes your acceptance of the updated Terms. It is your responsibility to check this page periodically for updates.</p>
+
+      <h2>17. Contact</h2>
+      <p>If you have questions about these Terms of Service, please contact us at: <strong>toolslab@digitalhub.in</strong> or use our <button onclick="showPage('contact')" style="color:var(--primary);background:none;border:none;cursor:pointer;font-weight:600;font-size:15px;">Contact Form</button>.</p>
+    </div>
+    <div class="ad-slot no-print"><div class="ad-banner">Advertisement · Google AdSense (728×90)</div></div>
+  </div>
+
+  <!-- ═══════════ DISCLAIMER PAGE ═══════════ -->
+  <div id="page-disclaimer" class="page">
+    <div class="ad-slot no-print"><div class="ad-banner">Advertisement · Google AdSense (728×90)</div></div>
+    <div class="static-page">
+      <h1>Disclaimer</h1>
+      <p class="meta">Last updated: May 1, 2025 &nbsp;·&nbsp; Operated by Digital Hub</p>
+
+      <p>The information, tools, and services provided on <strong>ToolsLab</strong> (toolslab.digitalhub.in), operated by <strong>Digital Hub</strong>, are intended for general informational and productivity purposes only. By accessing and using this Website, you acknowledge that you have read, understood, and agreed to this Disclaimer in its entirety. If you do not agree with any part of this Disclaimer, please discontinue use of the Website immediately.</p>
+
+      <h2>1. General Information Disclaimer</h2>
+      <p>The content published on ToolsLab — including text, guides, tool descriptions, government portal information, and any other material — is provided for general informational and educational purposes only. While we make every effort to ensure accuracy and keep information up to date, we make no representations or warranties of any kind, express or implied, about the completeness, accuracy, reliability, suitability, or availability of any information on this Website. Any reliance you place on such information is strictly at your own risk. Digital Hub shall not be responsible or liable for any loss or damage whatsoever arising from your reliance on information obtained from this Website.</p>
+
+      <h2>2. Not Official Government Services</h2>
+      <p><strong>ToolsLab is not affiliated with, endorsed by, authorized by, or in any way officially connected to the Government of India, any state government, or any government department, ministry, or agency.</strong> The name "ToolsLab" and the brand "Digital Hub" are private entities with no government affiliation whatsoever.</p>
+      <p>Government portal links provided on our website (including but not limited to UIDAI/Aadhaar, NVSP/Voter ID, IRCTC, EPFO, PMJAY, PM Kisan, Passport Seva, etc.) are provided purely as a convenience to help users navigate to official websites. We do not represent, administer, or have any control over these portals or the services they provide.</p>
+      <p><strong>Important Notice Regarding Card Print Layouts:</strong> The card print layout templates provided in our "Card Printing Services" section — including layouts that resemble Aadhaar cards, Voter ID cards, Driving Licences, Health cards, Tax ID cards, and Ration/Food Subsidy cards — are provided exclusively for design display, formatting practice, and novelty printing purposes. These templates:</p>
+      <ul>
+        <li>Are NOT official government-issued identity documents</li>
+        <li>Cannot be used as genuine proof of identity at any institution, government office, bank, or other organization</li>
+        <li>Are NOT replacements for actual government-issued cards obtained through official channels</li>
+        <li>Should NOT be presented to any authority as genuine government documents</li>
+        <li>Are intended only for personal reference, educational layout practice, or display purposes</li>
+      </ul>
+      <p>Misuse of these templates to create fraudulent identity documents is a criminal offense under the Indian Penal Code and applicable laws. Digital Hub takes no responsibility for any misuse by users and will cooperate fully with law enforcement authorities in the event of any reported misuse.</p>
+
+      <h2>3. Tool and Service Accuracy Disclaimer</h2>
+      <p>All tools on ToolsLab, including PDF converters, image tools, resume builders, QR code generators, and other utilities, are provided on a best-effort basis. While we work hard to ensure these tools function correctly and produce accurate outputs, we do not guarantee that:</p>
+      <ul>
+        <li>Tool outputs will always be 100% accurate, formatted perfectly, or suitable for every use case</li>
+        <li>PDF conversions will always preserve the exact layout of original documents</li>
+        <li>All tools will function identically across every browser, device, or operating system</li>
+        <li>Tools will be available at all times without interruption, error, or downtime</li>
+        <li>File processing will succeed for every file type, size, or format</li>
+      </ul>
+      <p>Users are strongly advised to always review tool outputs carefully before using them for any important purpose, and to maintain backup copies of all original documents. Digital Hub is not responsible for any data loss, file corruption, formatting errors, or other issues arising from the use of our tools.</p>
+
+      <h2>4. File Processing and Data Disclaimer</h2>
+      <p>All file-based tools on ToolsLab (including PDF tools, image converters, and document creators) operate entirely within your web browser using JavaScript. Your files, images, and documents are processed locally on your device and are never transmitted to our servers. However, Digital Hub makes no warranty regarding the security of your device, your browser, or your local network environment. It is your responsibility to ensure you are using a secure and trusted device and internet connection when processing sensitive personal documents.</p>
+
+      <h2>5. Mock Test and Educational Content Disclaimer</h2>
+      <p>The Mock Test feature on ToolsLab is provided for general practice and entertainment purposes only. Questions, answers, and educational content in our mock tests are created by our team and may not reflect the exact syllabus, format, or difficulty level of any specific official examination. ToolsLab does not guarantee that practice through our mock tests will result in improved scores or success in any official examination. For preparation for serious competitive exams, users should refer to official study materials, authorized coaching institutes, and government-issued exam syllabi.</p>
+
+      <h2>6. External Links and Third-Party Websites Disclaimer</h2>
+      <p>ToolsLab contains hyperlinks to external third-party websites, including official government portals. These links are provided for the convenience of our users. The inclusion of any external link does not imply that Digital Hub endorses, approves, controls, or has verified the content of the linked website. We have no control over the availability, content, accuracy, security, or privacy practices of any external website. When you click an external link and leave ToolsLab, you do so at your own risk and are subject to the terms and conditions and privacy policy of the destination website. We strongly encourage users to review the policies of any external site they visit.</p>
+
+      <h2>7. Advertisement Disclaimer</h2>
+      <p>ToolsLab displays third-party advertisements through <strong>Google AdSense</strong> to fund the free operation of this platform. These advertisements are served by Google and are clearly labelled as advertisements. Digital Hub does not endorse, recommend, or take responsibility for any product, service, company, or individual advertised on this website. The appearance of any advertisement does not constitute an endorsement by Digital Hub.</p>
+      <p>We maintain a strict separation between our editorial content and advertising. Our tool content, guides, and portal links are created independently and are not influenced by advertisers. We comply fully with Google AdSense Program Policies, including policies on content quality, user experience, and ad placement standards.</p>
+
+      <h2>8. Professional Advice Disclaimer</h2>
+      <p>Nothing on ToolsLab constitutes legal, financial, medical, tax, or any other form of professional advice. Content provided by our tools (such as resume templates, application letter templates, or ID card layouts) is for general guidance only and should not be relied upon as a substitute for qualified professional advice. For specific legal, financial, or other professional matters, please consult a qualified professional in the relevant field.</p>
+
+      <h2>9. Limitation of Liability</h2>
+      <p>To the fullest extent permitted by applicable law, Digital Hub, its founders, directors, employees, and agents shall not be liable for any direct, indirect, incidental, consequential, special, or exemplary damages, including but not limited to: loss of data, documents, profits, or revenue; personal or business losses; or any other losses arising from or in connection with your use of ToolsLab, reliance on any information provided, use of any tool output, or inability to access the Website. Your use of ToolsLab is entirely at your own risk.</p>
+
+      <h2>10. Changes to This Disclaimer</h2>
+      <p>Digital Hub reserves the right to update or modify this Disclaimer at any time without prior notice. Any changes will be posted on this page with an updated "Last updated" date. Your continued use of ToolsLab following any changes constitutes your acceptance of the revised Disclaimer. We recommend reviewing this page periodically.</p>
+
+      <h2>11. Contact Us</h2>
+      <p>If you have questions about this Disclaimer or believe content on our website requires attention, please contact us:</p>
+      <ul>
+        <li><strong>Email:</strong> toolslab@digitalhub.in</li>
+        <li><strong>WhatsApp:</strong> +91 12345 67890</li>
+        <li><strong>Contact Form:</strong> <button onclick="showPage('contact')" style="color:var(--primary);background:none;border:none;cursor:pointer;font-weight:600;font-size:15px;">Click here</button></li>
+      </ul>
+    </div>
+    <div class="ad-slot no-print"><div class="ad-banner">Advertisement · Google AdSense (728×90)</div></div>
+  </div>
+
+  <!-- ═══════════ CONTACT PAGE ═══════════ -->
+  <div id="page-contact" class="page">
+    <div class="ad-slot no-print"><div class="ad-banner">Advertisement · Google AdSense (728×90)</div></div>
+    <div class="static-page">
+      <h1>Contact Us</h1>
+      <p class="meta">We are here to help — reach the Digital Hub team any time</p>
+
+      <p>At <strong>ToolsLab by Digital Hub</strong>, we genuinely value every message from our users. Whether you have found a bug in one of our tools, want to request a new feature, have a question about our privacy practices, are interested in advertising or partnership opportunities, or just want to share your feedback — we would love to hear from you. Our team responds to all genuine inquiries within 24 hours on working days (Monday to Saturday).</p>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin:28px 0;" class="about-grid">
+        <div class="about-card">
+          <div class="icon">📧</div>
+          <h4>Email Support</h4>
+          <p>toolslab@digitalhub.in</p>
+          <p style="font-size:12px;margin-top:4px;">Response within 24 hours</p>
+        </div>
+        <div class="about-card">
+          <div class="icon">💬</div>
+          <h4>WhatsApp</h4>
+          <p>+91 12345 67890</p>
+          <p style="font-size:12px;margin-top:4px;">Mon–Sat, 10am–7pm IST</p>
+        </div>
+        <div class="about-card">
+          <div class="icon">🏢</div>
+          <h4>Office</h4>
+          <p>Digital Hub</p>
+          <p style="font-size:12px;margin-top:4px;">India</p>
+        </div>
+      </div>
+
+      <h2>Before You Write to Us</h2>
+      <p>To help us respond quickly and accurately, please check the following common topics first:</p>
+      <ul>
+        <li><strong>Tool not working?</strong> Try refreshing the page and using a modern browser like Google Chrome or Firefox. Clear your browser cache if issues persist.</li>
+        <li><strong>PDF tool error?</strong> Ensure your PDF is not password-protected. Some encrypted PDFs cannot be processed in the browser.</li>
+        <li><strong>Government portal question?</strong> We only provide links to official portals. For queries about Aadhaar, PAN, Voter ID, etc., please contact the relevant government authority directly.</li>
+        <li><strong>Card layouts?</strong> Remember that our card print layouts are for display/design purposes only and are not official documents.</li>
+        <li><strong>Advertising enquiries?</strong> Email us at toolslab@digitalhub.in with subject "Advertising Enquiry".</li>
+      </ul>
+
+      <div style="background:#fff;border:1.5px solid var(--border);border-radius:20px;padding:32px;margin-top:28px;">
+        <h2 style="margin-bottom:6px;">Send Us a Message</h2>
+        <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px;">Fill in the form below and our team will get back to you as soon as possible.</p>
+        <div class="contact-form-grid" style="margin-bottom:14px;">
+          <div class="form-group" style="margin:0;">
+            <label class="form-label">Your Name *</label>
+            <input type="text" id="ctName" class="form-input" placeholder="Enter your full name"/>
+          </div>
+          <div class="form-group" style="margin:0;">
+            <label class="form-label">Email Address *</label>
+            <input type="email" id="ctEmail" class="form-input" placeholder="you@example.com"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone (optional)</label>
+          <input type="tel" id="ctPhone" class="form-input" placeholder="+91 98765 43210"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Subject *</label>
+          <select id="ctSubject" class="form-input">
+            <option value="">-- Select a subject --</option>
+            <option>Tool Not Working / Bug Report</option>
+            <option>New Tool Request</option>
+            <option>General Feedback</option>
+            <option>Privacy / Data Concern</option>
+            <option>Advertising Enquiry</option>
+            <option>Partnership / Collaboration</option>
+            <option>Content Correction</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Message *</label>
+          <textarea id="ctMessage" class="form-input" rows="6" placeholder="Please describe your issue, suggestion, or question in detail. The more information you provide, the faster we can help you."></textarea>
+        </div>
+        <div style="background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:#1e40af;">
+          🔒 <strong>Privacy Note:</strong> Your contact details are used only to respond to your inquiry and are never shared with third parties.
+        </div>
+        <button class="btn btn-primary" onclick="submitContact()" style="padding:13px 36px;font-size:15px;">Send Message 📤</button>
+      </div>
+
+      <h2 style="margin-top:32px;">Frequently Asked Contact Topics</h2>
+      <p><strong>Q: Can I request a specific government portal link to be added?</strong><br>Yes! Use the contact form above with subject "New Tool Request" and mention the portal name and URL.</p>
+      <p><strong>Q: I found incorrect information on your website. How do I report it?</strong><br>Please use the contact form with subject "Content Correction" and describe what you found. We appreciate your help in keeping ToolsLab accurate.</p>
+      <p><strong>Q: Can businesses advertise on ToolsLab?</strong><br>ToolsLab uses Google AdSense for advertising. For direct advertising or sponsorship enquiries, email us at toolslab@digitalhub.in.</p>
+      <p><strong>Q: I want to partner with ToolsLab. Who should I contact?</strong><br>For partnership and collaboration proposals, please email toolslab@digitalhub.in with subject "Partnership Enquiry" and include details about your proposal.</p>
+      <p><strong>Q: How long does it take to get a reply?</strong><br>We aim to respond to all genuine enquiries within 24 hours on working days (Monday–Saturday, 10am–7pm IST). Complex technical issues may take up to 48 hours.</p>
+    </div>
+    <div class="ad-slot no-print"><div class="ad-banner">Advertisement · Google AdSense (728×90)</div></div>
+  </div>
+
+  <!-- ═══════════ FOOTER ═══════════ -->
+  <footer class="footer no-print">
+    <div class="footer-inner">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="logo">
+            <div class="logo-mark">TL</div>
+            <div>
+              <div class="logo-text">ToolsLab</div>
+              <div class="logo-sub">by Digital Hub</div>
+            </div>
+          </div>
+          <p>Your trusted one-stop platform for all digital work. PDF tools, ID printing, resume builder, government portals — all free and browser-based.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Tools</h4>
+          <a onclick="showPage('home');scrollTo('essential')">Essential Services</a>
+          <a onclick="showPage('home');scrollTo('creative')">Creative Design</a>
+          <a onclick="showPage('home');scrollTo('pdf')">PDF & Image</a>
+          <a onclick="showPage('home');scrollTo('cards')">Card Printing</a>
+          <a onclick="showPage('home');scrollTo('portal')">Gov Portals</a>
+        </div>
+        <div class="footer-col">
+          <h4>Company</h4>
+          <a onclick="showPage('about')">About Us</a>
+          <a onclick="showPage('contact')">Contact</a>
+          <a href="https://wa.me/911234567890" target="_blank">WhatsApp</a>
+        </div>
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <a onclick="showPage('privacy')">Privacy Policy</a>
+          <a onclick="showPage('terms')">Terms of Service</a>
+          <a onclick="showPage('disclaimer')">Disclaimer</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© <span id="yearFoot"></span> ToolsLab by Digital Hub. All rights reserved.</p>
+        <div class="footer-badges">
+          <span class="footer-badge">🔒 Privacy Safe</span>
+          <span class="footer-badge">⚡ Browser-Based</span>
+          <span class="footer-badge">🇮🇳 Made in India</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- WhatsApp Float -->
+  <a href="https://wa.me/911234567890?text=Hi%20ToolsLab!" target="_blank" class="wa-float no-print">
+    <svg fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+  </a>
+
+  <!-- Toast -->
+  <div id="toast" class="toast"></div>
+
+  <!-- MODAL -->
+  <div id="modal" class="modal-overlay no-print" onclick="handleModalClick(event)">
+    <div class="modal-box">
+      <div class="modal-header">
+        <span class="modal-title" id="modalTitle">Tool</span>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+<script>
+/* ═══════════════════════════════════════
+   DATA
+═══════════════════════════════════════ */
+const TOOLS = {
+  essential: [
+    {id:'latest-jobs', name:'Latest Jobs', icon:'💼', bg:'#dbeafe', ext:true, url:'https://www.ncs.gov.in/', badge:'new'},
+    {id:'mock-test', name:'Mock Test', icon:'📝', bg:'#fee2e2', badge:'hot'},
+    {id:'id-card-print', name:'ID Card Print', icon:'🪪', bg:'#e0e7ff'},
+    {id:'passport-photo', name:'Passport Photo', icon:'📷', bg:'#fef3c7'},
+    {id:'photo-crop', name:'Photo Resize', icon:'✂️', bg:'#ccfbf1'},
+    {id:'resume-cv', name:'Resume / CV', icon:'📄', bg:'#e0f2fe', badge:'new'},
+    {id:'payment-qr', name:'Payment QR', icon:'💳', bg:'#d1fae5', badge:'new'},
+    {id:'ppt-profile', name:'PPT Profile', icon:'📊', bg:'#ffedd5'},
+    {id:'nsdl-paam', name:'NSDL PAAM ID', icon:'🔐', bg:'#ede9fe', ext:true, url:'https://www.onlineservices.nsdl.com/paam/endUserRegisterContact.html', badge:'hot'},
+    {id:'new-service', name:'New Service Post', icon:'📰', bg:'#d1fae5', badge:'new'},
+  ],
+  creative: [
+    {id:'pro-resume', name:'Pro Resume Maker', icon:'🎓', bg:'#dbeafe', badge:'new'},
+    {id:'marriage-biodata', name:'Marriage Biodata', icon:'💌', bg:'#fce7f3', badge:'new'},
+    {id:'pro-id', name:'Pro ID Maker', icon:'🆔', bg:'#ede9fe', badge:'new'},
+    {id:'pro-poster', name:'Pro Poster Maker', icon:'🖼️', bg:'#cffafe', badge:'new'},
+    {id:'application-maker', name:'Application Maker', icon:'📑', bg:'#fef9c3', badge:'new'},
+    {id:'shop-promo', name:'Shop Promotion', icon:'🏪', bg:'#dcfce7', badge:'new'},
+  ],
+  pdf: [
+    {id:'jpg-to-pdf', name:'JPG To PDF', icon:'🖼️', bg:'#ffedd5'},
+    {id:'pdf-to-jpg', name:'PDF To JPG', icon:'📄', bg:'#fee2e2'},
+    {id:'png-to-pdf', name:'PNG To PDF', icon:'🌄', bg:'#d1fae5'},
+    {id:'png-to-jpg', name:'PNG To JPG', icon:'🎨', bg:'#ccfbf1'},
+    {id:'delete-pdf-page', name:'Delete PDF Page', icon:'🗑️', bg:'#fce7f3'},
+    {id:'merge-pdf', name:'Merge PDF', icon:'📎', bg:'#dbeafe'},
+  ],
+  cards: [
+    {id:'unique-id-print', name:'Unique ID Print', icon:'🔷', bg:'#e0f2fe', badge:'new'},
+    {id:'election-print', name:'Election Card Print', icon:'🗳️', bg:'#e0e7ff'},
+    {id:'health-print', name:'Health Plan Card', icon:'🏥', bg:'#d1fae5', badge:'new'},
+    {id:'tax-id-print', name:'Tax ID Card Print', icon:'💰', bg:'#fef9c3'},
+    {id:'driving-permit-print', name:'Driving Permit', icon:'🚗', bg:'#dbeafe'},
+    {id:'school-id-print', name:'School / College ID', icon:'🏫', bg:'#ede9fe'},
+    {id:'food-subsidy-print', name:'Food Subsidy Card', icon:'🍚', bg:'#ffedd5', badge:'new'},
+  ],
+  portal: [
+    {id:'aadhaar', name:'Aadhaar', icon:'🎯', bg:'#fef3c7', ext:true, url:'https://uidai.gov.in/'},
+    {id:'pan', name:'PAN Card', icon:'🧾', bg:'#e0f2fe', ext:true, url:'https://www.onlineservices.nsdl.com/paam/endUserRegisterContact.html'},
+    {id:'voter', name:'Voter ID', icon:'🗳️', bg:'#ffedd5', ext:true, url:'https://www.nvsp.in/'},
+    {id:'ayushman', name:'Ayushman', icon:'🏥', bg:'#d1fae5', ext:true, url:'https://pmjay.gov.in/'},
+    {id:'driving', name:'Driving Licence', icon:'🚘', bg:'#dbeafe', ext:true, url:'https://parivahan.gov.in/'},
+    {id:'rc', name:'RC Service', icon:'📋', bg:'#e0e7ff', ext:true, url:'https://vahan.parivahan.gov.in/'},
+    {id:'vehicle', name:'Vehicle Reg.', icon:'🚙', bg:'#cffafe', ext:true, url:'https://parivahan.gov.in/'},
+    {id:'echallan', name:'E-Challan', icon:'🧾', bg:'#fee2e2', ext:true, url:'https://echallan.parivahan.gov.in/'},
+    {id:'eshram', name:'E-Shram Card', icon:'💳', bg:'#ede9fe', ext:true, url:'https://eshram.gov.in/'},
+    {id:'apaar', name:'APAAR ID', icon:'🎓', bg:'#fce7f3', ext:true, url:'https://abc.gov.in/'},
+    {id:'abha', name:'ABHA Card', icon:'🏥', bg:'#ccfbf1', ext:true, url:'https://abha.abdm.gov.in/'},
+    {id:'pmfasal', name:'PM Fasal Bima', icon:'🌾', bg:'#d1fae5', ext:true, url:'https://pmfby.gov.in/'},
+    {id:'pmayg', name:'PMAY-Gramin', icon:'🏠', bg:'#dcfce7', ext:true, url:'https://pmayg.nic.in/'},
+    {id:'pmayu', name:'PMAY-Urban', icon:'🏢', bg:'#fef9c3', ext:true, url:'https://pmay-urban.gov.in/'},
+    {id:'epfo', name:'EPFO', icon:'💼', bg:'#dbeafe', ext:true, url:'https://www.epfindia.gov.in/'},
+    {id:'puc', name:'PUC Service', icon:'🏭', bg:'#f1f5f9', ext:true, url:'https://parivahan.gov.in/puc'},
+    {id:'cibil', name:'Free CIBIL', icon:'📊', bg:'#ede9fe', ext:true, url:'https://www.transunioncibil.com/'},
+    {id:'ncs', name:'Career Service', icon:'💼', bg:'#fce7f3', ext:true, url:'https://www.ncs.gov.in/'},
+    {id:'consumer', name:'Consumer Forum', icon:'📢', bg:'#ffedd5', ext:true, url:'https://consumerhelpline.gov.in/'},
+    {id:'payments', name:'NPCI Payments', icon:'💸', bg:'#e0e7ff', ext:true, url:'https://www.npci.org.in/'},
+    {id:'lic', name:'LIC Service', icon:'🛡️', bg:'#fee2e2', ext:true, url:'https://www.licindia.in/'},
+    {id:'enam', name:'E-NAM', icon:'🌽', bg:'#d1fae5', ext:true, url:'https://enam.gov.in/'},
+    {id:'pmsvanidhi', name:'PM SVANidhi', icon:'🛒', bg:'#fef3c7', ext:true, url:'https://pmsvanidhi.mohua.gov.in/'},
+    {id:'soilhealth', name:'Soil Health', icon:'🌱', bg:'#d1fae5', ext:true, url:'https://soilhealth.dac.gov.in/'},
+    {id:'mkisan', name:'mKisan Portal', icon:'👨‍🌾', bg:'#dcfce7', ext:true, url:'https://mkisan.gov.in/'},
+    {id:'pmsurya', name:'PM Surya Ghar', icon:'☀️', bg:'#fef9c3', ext:true, url:'https://pmsuryaghar.gov.in/'},
+    {id:'udyam', name:'Udyam Register', icon:'🏭', bg:'#cffafe', ext:true, url:'https://udyamregistration.gov.in/'},
+    {id:'scholarship', name:'Scholarship', icon:'🎓', bg:'#e0f2fe', ext:true, url:'https://scholarships.gov.in/'},
+    {id:'lostfound', name:'Lost Mobile', icon:'📱', bg:'#fce7f3', ext:true, url:'https://ceir.gov.in/'},
+    {id:'railway', name:'IRCTC Railway', icon:'🚂', bg:'#dbeafe', ext:true, url:'https://www.irctc.co.in/'},
+    {id:'passport', name:'Passport Seva', icon:'🛂', bg:'#ffedd5', ext:true, url:'https://www.passportindia.gov.in/'},
+    {id:'pmkisan', name:'PM Kisan', icon:'🌾', bg:'#d1fae5', ext:true, url:'https://pmkisan.gov.in/'},
+    {id:'gst', name:'GST Verify', icon:'📠', bg:'#f1f5f9', ext:true, url:'https://www.gst.gov.in/'},
+    {id:'roadtax', name:'Checkpost Tax', icon:'🛣️', bg:'#e0e7ff', ext:true, url:'https://parivahan.gov.in/'},
+    {id:'vahan', name:'Vahan Green', icon:'🌿', bg:'#ccfbf1', ext:true, url:'https://vahan.parivahan.gov.in/'},
+  ]
+};
+
+const FAQS = [
+  {q:'What services are available on ToolsLab?', a:'ToolsLab offers PDF tools (convert, merge, delete pages), creative tools (resume builder, biodata maker, ID card generator, poster maker), photo tools (passport photo, resize/crop), card print layouts, and direct links to 35+ Indian government portals.'},
+  {q:'Are all tools free to use?', a:'Yes! All core tools on ToolsLab are completely free. No registration required. Simply open the tool, use it, and download your output instantly.'},
+  {q:'Is my data safe? Do you upload my files?', a:'Absolutely safe. All file processing (PDF, images, etc.) happens entirely within your browser using JavaScript. Your files are never uploaded to any server. We never see your documents.'},
+  {q:'How do I make a passport size photo?', a:'Click "Passport Photo" tool, upload any clear photo, and the tool will arrange it in standard 35×45mm size across a 6×4 inch print layout. Download and get it printed at any photo studio.'},
+  {q:'Can I use the ID card print layouts as official documents?', a:'No. Card print layouts on ToolsLab are for design/display purposes only and cannot be used as official government-issued documents. Always carry original government IDs.'},
+  {q:'How do I merge multiple PDF files?', a:'Open the "Merge PDF" tool, click to upload multiple PDF files (select all at once), then click "Merge & Download". Your merged PDF will download instantly.'},
+];
+
+/* ═══════════════════════════════════════
+   RENDER TOOLS
+═══════════════════════════════════════ */
+function renderTools() {
+  Object.entries(TOOLS).forEach(([cat, items]) => {
+    const grid = document.getElementById('grid-' + cat);
+    if (!grid) return;
+    items.forEach((t, i) => {
+      const badge = t.badge ? `<span class="badge badge-${t.badge}">${t.badge}</span>` : '';
+      const card = document.createElement('div');
+      card.className = 'tool-card';
+      card.dataset.name = (t.name + ' ' + cat).toLowerCase();
+      card.dataset.cat = cat;
+      card.innerHTML = `
+        ${badge}
+        <div class="tool-icon-wrap" style="background:${t.bg}">${t.icon}</div>
+        <div class="tool-name">${t.name}</div>
+      `;
+      card.style.animationDelay = (i * 0.03) + 's';
+      card.onclick = () => handleTool(t);
+      grid.appendChild(card);
+    });
+    const cnt = document.getElementById('cnt-' + cat);
+    if (cnt) cnt.textContent = items.length;
+  });
+}
+
+function renderFAQs() {
+  const c = document.getElementById('faqContainer');
+  FAQS.forEach(f => {
+    const el = document.createElement('div');
+    el.className = 'faq-item';
+    el.innerHTML = `
+      <button class="faq-q" onclick="toggleFAQ(this)">
+        ${f.q}
+        <svg class="faq-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+      </button>
+      <div class="faq-a"><div class="faq-a-inner">${f.a}</div></div>
+    `;
+    c.appendChild(el);
+  });
+}
+
+function toggleFAQ(btn) {
+  const item = btn.closest('.faq-item');
+  const isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+  if (!isOpen) item.classList.add('open');
+}
+
+/* ═══════════════════════════════════════
+   PAGE SYSTEM
+═══════════════════════════════════════ */
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => {
+    p.classList.remove('active');
+  });
+  const pg = document.getElementById('page-' + name);
+  if (pg) {
+    pg.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  // Close mobile menu if open
+  const mm = document.getElementById('mobileMenu');
+  if (mm) mm.style.display = 'none';
+}
+function toggleMobileMenu() {
+  const m = document.getElementById('mobileMenu');
+  m.style.display = m.style.display === 'none' ? 'block' : 'none';
+}
+
+/* ═══════════════════════════════════════
+   MODAL
+═══════════════════════════════════════ */
+function openModal(title, html) {
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalBody').innerHTML = html;
+  document.getElementById('modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+  document.body.style.overflow = '';
+  setTimeout(() => { document.getElementById('modalBody').innerHTML = ''; }, 350);
+}
+function handleModalClick(e) { if (e.target === document.getElementById('modal')) closeModal(); }
+
+/* ═══════════════════════════════════════
+   TOOL ROUTER
+═══════════════════════════════════════ */
+function handleTool(t) {
+  if (t.ext) { openExternalModal(t.name, t.url); return; }
+  const map = {
+    'mock-test': () => openModal('📝 Mock Test', mockTestUI()),
+    'payment-qr': () => openModal('💳 Payment QR Generator', qrUI()),
+    'jpg-to-pdf': () => openModal('🖼️ JPG To PDF', imageToPdfUI('JPG')),
+    'png-to-pdf': () => openModal('🌄 PNG To PDF', imageToPdfUI('PNG')),
+    'png-to-jpg': () => openModal('🎨 PNG To JPG', pngToJpgUI()),
+    'merge-pdf': () => openModal('📎 Merge PDF', mergePdfUI()),
+    'delete-pdf-page': () => openModal('🗑️ Delete PDF Page', deletePdfPageUI()),
+    'photo-crop': () => openModal('✂️ Photo Resize & Crop', resizeUI()),
+    'passport-photo': () => openModal('📷 Passport Photo Maker', passportUI()),
+    'resume-cv': () => openModal('📄 Resume Builder', resumeUI()),
+    'pro-resume': () => openModal('🎓 Pro Resume Maker', resumeUI()),
+    'marriage-biodata': () => openModal('💌 Marriage Biodata', biodataUI()),
+    'pro-id': () => openModal('🆔 ID Card Maker', idMakerUI()),
+    'pro-poster': () => openModal('🖼️ Poster Maker', posterUI()),
+    'application-maker': () => openModal('📑 Application Maker', applicationUI()),
+    'shop-promo': () => openModal('🏪 Shop Promo Poster', posterUI()),
+    'id-card-print': () => openModal('🪪 ID Card Print', idMakerUI()),
+    'unique-id-print': () => openModal('🔷 Unique ID Print', idMakerUI()),
+    'election-print': () => openModal('🗳️ Election Card Print', cardPrintUI('voter')),
+    'health-print': () => openModal('🏥 Health Plan Card', cardPrintUI('health')),
+    'tax-id-print': () => openModal('💰 Tax ID Card Print', cardPrintUI('tax')),
+    'driving-permit-print': () => openModal('🚗 Driving Permit', cardPrintUI('driving')),
+    'school-id-print': () => openModal('🏫 School / College ID', idMakerUI()),
+    'food-subsidy-print': () => openModal('🍚 Food Subsidy Card', cardPrintUI('food')),
+    'pdf-to-jpg': () => openModal('📄 PDF To JPG', pdfToJpgUI()),
+    'ppt-profile': () => openModal('📊 PPT Profile', comingSoonUI('PPT / Profile Generator')),
+    'new-service': () => openModal('📰 New Service Post', comingSoonUI('New Service Post Maker')),
+  };
+  const fn = map[t.id];
+  if (fn) fn(); else openModal(t.name, comingSoonUI(t.name));
+}
+
+function openExternalModal(name, url) {
+  openModal('🌐 ' + name, `
+    <div style="text-align:center;padding:32px 20px;">
+      <div style="font-size:56px;margin-bottom:16px;">🌐</div>
+      <h3 style="font-size:20px;margin-bottom:10px;">${name}</h3>
+      <p style="color:var(--text-muted);font-size:14px;max-width:380px;margin:0 auto 28px;">You are about to visit the <strong>official portal</strong> for ${name}. ToolsLab does not collect data from these external pages.</p>
+      <div style="display:flex;gap:12px;justify-content:center;">
+        <button class="btn btn-secondary" onclick="closeModal()">← Go Back</button>
+        <a href="${url}" target="_blank" onclick="closeModal()" class="btn btn-primary">Visit Official Site ↗</a>
+      </div>
+    </div>
+  `);
+}
+
+function comingSoonUI(name) {
+  return `
+    <div style="text-align:center;padding:40px 20px;">
+      <div style="font-size:52px;margin-bottom:16px;">🚧</div>
+      <h3 style="font-size:20px;margin-bottom:8px;">${name}</h3>
+      <p style="color:var(--text-muted);font-size:14px;max-width:360px;margin:0 auto 24px;">This tool is currently being developed. We are building a fast, browser-based version that keeps your data private.</p>
+      <button class="btn btn-primary" onclick="closeModal()">Close</button>
+    </div>
+  `;
+}
+
+/* ═══════════════════════════════════════
+   TOOL: MOCK TEST
+═══════════════════════════════════════ */
+function mockTestUI() {
+  const questions = [
+    {q:'Which is the capital of India?', opts:['Mumbai','New Delhi','Kolkata','Chennai'], a:1},
+    {q:'What does PDF stand for?', opts:['Print Document Format','Portable Document Format','Public Data File','Personal Doc File'], a:1},
+    {q:'Which gas do plants absorb during photosynthesis?', opts:['Oxygen','Nitrogen','Carbon Dioxide','Hydrogen'], a:2},
+    {q:'How many bytes are in 1 Kilobyte (KB)?', opts:['100','512','1024','2048'], a:2},
+    {q:'Which is a renewable energy source?', opts:['Coal','Natural Gas','Petroleum','Solar Energy'], a:3},
+    {q:'The full form of UPI is:', opts:['Unified Payment Interface','Universal Payment Index','United Payment Interface','Unified Payment Index'], a:0},
+    {q:'What does Aadhaar card contain?', opts:['PAN Number','12-digit UID','Bank Account','Ration Number'], a:1},
+    {q:'Which article of the Indian Constitution guarantees Right to Equality?', opts:['Article 14','Article 21','Article 32','Article 19'], a:0},
+  ];
+  let cur = 0, score = 0, answered = false;
+  setTimeout(() => {
+    function render() {
+      const app = document.getElementById('mtApp');
+      if (!app) return;
+      if (cur >= questions.length) {
+        const pct = Math.round((score / questions.length) * 100);
+        const grade = pct >= 80 ? '🏆 Excellent!' : pct >= 60 ? '🎉 Good Job!' : '💪 Keep Practicing!';
+        app.innerHTML = `
+          <div style="text-align:center;padding:32px;">
+            <div style="font-size:52px;margin-bottom:12px;">${pct >= 60 ? '🎉' : '📚'}</div>
+            <h3 style="font-size:24px;margin-bottom:8px;">${grade}</h3>
+            <div style="font-size:48px;font-weight:800;color:var(--primary);margin:16px 0;">${score}/${questions.length}</div>
+            <div style="color:var(--text-muted);margin-bottom:24px;">Score: ${pct}%</div>
+            <div style="height:8px;background:#e2e8f0;border-radius:4px;overflow:hidden;margin-bottom:28px;">
+              <div style="height:100%;background:${pct>=60?'var(--success)':'var(--danger)'};width:${pct}%;transition:width 1s ease;border-radius:4px;"></div>
+            </div>
+            <button class="btn btn-primary" onclick="restartTest()">Try Again 🔄</button>
+          </div>
+        `;
+        return;
+      }
+      const q = questions[cur];
+      answered = false;
+      app.innerHTML = `
+        <div style="margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:13px;color:var(--text-muted);">Question ${cur+1} of ${questions.length}</span>
+          <span style="font-size:13px;font-weight:600;color:var(--primary);">Score: ${score}</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${(cur/questions.length)*100}%"></div></div>
+        <div style="background:var(--surface2);border-radius:14px;padding:20px;margin:16px 0;">
+          <h4 style="font-size:16px;line-height:1.5;">${q.q}</h4>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;" id="opts">
+          ${q.opts.map((o,i) => `
+            <button class="option-btn" onclick="selectOpt(${i},${q.a})" id="opt${i}">
+              <span class="option-num">${String.fromCharCode(65+i)}</span>${o}
+            </button>
+          `).join('')}
+        </div>
+        <button class="btn btn-primary btn-full" style="margin-top:16px;" id="nextBtn" onclick="nextQ()" disabled>Next Question →</button>
+      `;
+    }
+    window.selectOpt = (idx, correct) => {
+      if (answered) return;
+      answered = true;
+      if (idx === correct) score++;
+      for (let i = 0; i < questions[cur].opts.length; i++) {
+        const b = document.getElementById('opt' + i);
+        if (!b) continue;
+        b.style.pointerEvents = 'none';
+        if (i === correct) { b.style.borderColor = 'var(--success)'; b.style.background = '#f0fdf4'; }
+        else if (i === idx && idx !== correct) { b.style.borderColor = 'var(--danger)'; b.style.background = '#fef2f2'; }
+      }
+      const nb = document.getElementById('nextBtn');
+      if (nb) { nb.disabled = false; }
+    };
+    window.nextQ = () => { cur++; render(); };
+    window.restartTest = () => { cur = 0; score = 0; answered = false; render(); };
+    render();
+  }, 50);
+  return `<div id="mtApp"></div>`;
+}
+
+/* ═══════════════════════════════════════
+   TOOL: QR GENERATOR
+═══════════════════════════════════════ */
+function qrUI() {
+  setTimeout(() => {
+    window.generateQR = () => {
+      const upi = document.getElementById('qrUpi').value.trim();
+      const name = document.getElementById('qrName').value.trim();
+      const amt = document.getElementById('qrAmt').value.trim();
+      if (!upi) { showToast('Enter a UPI ID', 'error'); return; }
+      const container = document.getElementById('qrcode');
+      container.innerHTML = '';
+      const url = `upi://pay?pa=${encodeURIComponent(upi)}&pn=${encodeURIComponent(name||'Payee')}&am=${amt||''}&cu=INR`;
+      new QRCode(container, { text: url, width: 200, height: 200, colorDark:'#0f172a', colorLight:'#ffffff', correctLevel:QRCode.CorrectLevel.H });
+      document.getElementById('qrInfo').textContent = `UPI: ${upi}${name?' | '+name:''}${amt?' | ₹'+amt:''}`;
+      showToast('QR Code generated!', 'success');
+    };
+    window.downloadQR = () => {
+      const canvas = document.querySelector('#qrcode canvas');
+      if (!canvas) { showToast('Generate QR first', 'error'); return; }
+      const a = document.createElement('a'); a.href = canvas.toDataURL(); a.download = 'payment_qr.png'; a.click();
+    };
+  }, 50);
+  return `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+      <div>
+        <div class="form-group"><label class="form-label">UPI ID *</label><input type="text" id="qrUpi" class="form-input" placeholder="yourname@upi"></div>
+        <div class="form-group"><label class="form-label">Payee Name</label><input type="text" id="qrName" class="form-input" placeholder="Your Name"></div>
+        <div class="form-group"><label class="form-label">Amount ₹ (optional)</label><input type="number" id="qrAmt" class="form-input" placeholder="Leave blank for open amount"></div>
+        <button class="btn btn-primary btn-full" onclick="generateQR()">Generate QR Code</button>
+        <button class="btn btn-secondary btn-full" style="margin-top:10px;" onclick="downloadQR()">Download QR Image</button>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--surface2);border-radius:16px;padding:24px;border:1.5px solid var(--border);">
+        <div id="qrcode" style="min-height:80px;display:flex;align-items:center;justify-content:center;"></div>
+        <p id="qrInfo" style="font-size:12px;color:var(--text-muted);text-align:center;margin-top:12px;"></p>
+        <p style="font-size:11px;color:#94a3b8;margin-top:4px;">Scan with any UPI app to pay</p>
+      </div>
+    </div>
+  `;
+}
+
+/* ═══════════════════════════════════════
+   TOOL: IMAGE TO PDF
+═══════════════════════════════════════ */
+function imageToPdfUI(fmt) {
+  let files = [];
+  setTimeout(() => {
+    const input = document.getElementById('imgInput');
+    const drop = document.getElementById('dropZone');
+    input.onchange = e => addFiles(Array.from(e.target.files));
+    drop.ondragover = e => { e.preventDefault(); drop.classList.add('dragover'); };
+    drop.ondragleave = () => drop.classList.remove('dragover');
+    drop.ondrop = e => { e.preventDefault(); drop.classList.remove('dragover'); addFiles(Array.from(e.dataTransfer.files)); };
+    function addFiles(newFiles) {
+      files = [...files, ...newFiles.filter(f => f.type.startsWith('image/'))];
+      renderPrev();
+    }
+    function renderPrev() {
+      const g = document.getElementById('imgPreview');
+      g.innerHTML = files.map((f,i) => `
+        <div class="preview-img-item">
+          <img src="${URL.createObjectURL(f)}">
+          <button class="remove-btn" onclick="removeImg(${i})">×</button>
+        </div>
+      `).join('');
+      document.getElementById('cvtBtn').disabled = files.length === 0;
+      document.getElementById('imgCount').textContent = files.length ? `${files.length} image${files.length>1?'s':''} selected` : '';
+    }
+    window.removeImg = i => { files.splice(i,1); renderPrev(); };
+    window.convertImgToPdf = async () => {
+      if (!files.length) return;
+      const btn = document.getElementById('cvtBtn');
+      btn.textContent = 'Converting...'; btn.disabled = true;
+      try {
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('p','mm','a4');
+        for (let i = 0; i < files.length; i++) {
+          const dataUrl = await fileToDataUrl(files[i]);
+          if (i > 0) pdf.addPage();
+          const img = new Image(); img.src = dataUrl;
+          await new Promise(res => img.onload = res);
+          const pw=210,ph=297, sc=Math.min(pw/img.width,ph/img.height);
+          const w=img.width*sc, h=img.height*sc;
+          pdf.addImage(dataUrl,'JPEG',(pw-w)/2,(ph-h)/2,w,h);
+        }
+        pdf.save('converted.pdf');
+        showToast('PDF downloaded!', 'success');
+      } catch(e) { showToast('Conversion failed', 'error'); }
+      btn.textContent = 'Convert to PDF'; btn.disabled = false;
+    };
+  }, 50);
+  return `
+    <div>
+      <div class="drop-zone" id="dropZone" onclick="document.getElementById('imgInput').click()">
+        <div class="dz-icon">📤</div>
+        <div class="dz-text">Click or drag ${fmt} images here</div>
+        <div class="dz-hint">Multiple images supported · One page per image</div>
+        <input type="file" id="imgInput" accept="image/*" multiple style="display:none">
+      </div>
+      <div style="margin:8px 0;font-size:13px;color:var(--text-muted);" id="imgCount"></div>
+      <div class="preview-img-grid" id="imgPreview"></div>
+      <button class="btn btn-primary btn-full" style="margin-top:16px;" id="cvtBtn" onclick="convertImgToPdf()" disabled>Convert to PDF</button>
+    </div>
+  `;
+}
+
+/* ═══════════════════════════════════════
+   TOOL: PDF TO JPG
+═══════════════════════════════════════ */
+function pdfToJpgUI() {
+  setTimeout(() => {
+    document.getElementById('pdfJpgInput').onchange = async e => {
+      const f = e.target.files[0]; if (!f) return;
+      showToast('PDF to JPG requires server-side rendering. Download the PDF and use an online converter.', 'error');
+    };
+  }, 50);
+  return `
+    <div style="text-align:center;padding:20px;">
+      <div style="font-size:48px;margin-bottom:16px;">📄→🖼️</div>
+      <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px;">PDF to image conversion requires server processing. We recommend these free tools:</p>
+      <div style="display:flex;flex-direction:column;gap:10px;max-width:300px;margin:0 auto 20px;">
+        <a href="https://smallpdf.com/pdf-to-jpg" target="_blank" class="btn btn-primary">SmallPDF (Free) ↗</a>
+        <a href="https://ilovepdf.com/pdf_to_jpg" target="_blank" class="btn btn-secondary">ilovePDF (Free) ↗</a>
+      </div>
+      <input type="file" id="pdfJpgInput" accept=".pdf" style="display:none">
+    </div>
+  `;
+}
+
+/* ═══════════════════════════════════════
+   TOOL: PNG TO JPG
+═══════════════════════════════════════ */
+function pngToJpgUI() {
+  let img = null;
+  setTimeout(() => {
+    document.getElementById('pngInput').onchange = e => {
+      const f = e.target.files[0]; if (!f) return;
+      img = new Image();
+      img.onload = () => {
+        const prev = document.getElementById('pngPrev');
+        prev.src = img.src; prev.style.display = 'block';
+        document.getElementById('pngPlaceholder').style.display = 'none';
+        document.getElementById('pngConvertBtn').disabled = false;
+      };
+      img.src = URL.createObjectURL(f);
+    };
+    window.doPngToJpg = () => {
+      if (!img) return;
+      const q = parseInt(document.getElementById('jpgQuality').value) / 100;
+      const c = document.createElement('canvas');
+      c.width = img.naturalWidth; c.height = img.naturalHeight;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,c.width,c.height);
+      ctx.drawImage(img,0,0);
+      const a = document.createElement('a'); a.href = c.toDataURL('image/jpeg', q); a.download = 'converted.jpg'; a.click();
+      showToast('JPG downloaded!', 'success');
+    };
+  }, 50);
+  return `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+      <div>
+        <div class="form-group">
+          <label class="form-label">Select PNG Image</label>
+          <input type="file" id="pngInput" accept="image/png" class="form-input" style="padding:8px;">
+        </div>
+        <div class="form-group">
+          <label class="form-label">JPEG Quality: <span id="qualVal">90</span>%</label>
+          <input type="range" id="jpgQuality" min="60" max="100" value="90" class="form-input" oninput="document.getElementById('qualVal').textContent=this.value" style="padding:6px 0;">
+        </div>
+        <button class="btn btn-primary btn-full" id="pngConvertBtn" onclick="doPngToJpg()" disabled>Convert & Download JPG</button>
+      </div>
+      <div style="background:var(--surface2);border-radius:14px;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;min-height:200px;overflow:hidden;">
+        <img id="pngPrev" style="max-width:100%;max-height:280px;display:none;border-radius:10px;">
+        <span id="pngPlaceholder" style="color:var(--text-muted);font-size:13px;">Preview here</span>
+      </div>
+    </div>
+  `;
+}
+
+/* ═══════════════════════════════════════
+   TOOL: MERGE PDF
+═══════════════════════════════════════ */
+function mergePdfUI() {
+  setTimeout(() => {
+    let files = [];
+    document.getElementById('mergeInput').onchange = e => {
+      files = Array.from(e.target.files);
+      document.getElementById('mergeList').innerHTML = files.length ? files.map((f,i) =>
+        `<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;margin-bottom:8px;">
+          <span>📄</span><span style="flex:1;font-size:13px;font-weight:500;">${f.name}</span>
+          <span style="font-size:11px;color:var(--text-muted);">${(f.size/1024).toFixed(1)} KB</span>
+        </div>`).join('') : '';
+      document.getElementById('mergeBtn').disabled = files.length < 2;
+      document.getElementById('mergeCount').textContent = files.length >= 2 ? `${files.length} files ready to merge` : files.length === 1 ? 'Select at least 2 PDF files' : '';
+    };
+    window.doMerge = async () => {
+      const btn = document.getElementById('mergeBtn');
+      btn.textContent = 'Merging...'; btn.disabled = true;
+      try {
+        const merged = await PDFLib.PDFDocument.create();
+        for (const f of files) {
+          const bytes = await f.arrayBuffer();
+          const pdf = await PDFLib.PDFDocument.load(bytes);
+          const pages = await merged.copyPages(pdf, pdf.getPageIndices());
+          pages.forEach(p => merged.addPage(p));
+        }
+        const blob = await merged.save();
+        downloadBlob(blob, 'merged.pdf', 'application/pdf');
+        showToast(`Merged ${files.length} PDFs successfully!`, 'success');
+      } catch(e) { showToast('Merge failed. Ensure valid PDFs.', 'error'); }
+      btn.textContent = 'Merge & Download'; btn.disabled = false;
+    };
+  }, 50);
+  return `
+    <div>
+      <div class="form-group">
+        <label class="form-label">Select PDF Files (minimum 2)</label>
+        <input type="file" id="mergeInput" accept=".pdf" multiple class="form-input" style="padding:8px;">
+      </div>
+      <div id="mergeList"></div>
+      <div style="font-size:13px;color:var(--primary);margin-bottom:12px;" id="mergeCount"></div>
+      <button class="btn btn-primary btn-full" id="mergeBtn" onclick="doMerge()" disabled>Merge & Download PDF</button>
+    </div>
+  `;
+}
+
+/* ═══════════════════════════════════════
+   TOOL: DELETE PDF PAGE
+═══════════════════════════════════════ */
+function deletePdfPageUI() {
+  let pdfDoc = null, total = 0;
+  setTimeout(() => {
+    document.getElementById('delInput').onchange = async e => {
+      const f = e.target.files[0]; if (!f) return;
+      try {
+        const bytes = await f.arrayBuffer();
+        pdfDoc = await PDFLib.PDFDocument.load(bytes);
+        total = pdfDoc.getPageCount();
+        document.getElementById('delInfo').style.display = 'block';
+        document.getElementById('delTotal').textContent = total;
+        document.getElementById('delPage').max = total;
+        document.getElementById('delBtn').disabled = total < 2;
+      } catch { showToast('Invalid PDF file', 'error'); }
+    };
+    window.doDeletePage = async () => {
+      const n = parseInt(document.getElementById('delPage').value);
+      if (!n || n < 1 || n > total) { showToast('Enter valid page number', 'error'); return; }
+      const btn = document.getElementById('delBtn');
+      btn.textContent = 'Processing...'; btn.disabled = true;
+      try {
+        pdfDoc.removePage(n - 1);
+        const blob = await pdfDoc.save();
+        downloadBlob(blob, 'document_edited.pdf', 'application/pdf');
+        total--; document.getElementById('delTotal').textContent = total;
+        showToast(`Page ${n} deleted!`, 'success');
+      } catch { showToast('Failed to delete page', 'error'); }
+      btn.textContent = 'Delete Page & Download'; btn.disabled = false;
+    };
+  }, 50);
+  return `
+    <div>
+      <div class="form-group">
+        <label class="form-label">Select PDF File</label>
+        <input type="file" id="delInput" accept=".pdf" class="form-input" style="padding:8px;">
+      </div>
+      <div id="delInfo" style="display:none;background:var(--surface2);border-radius:12px;padding:20px;margin-bottom:16px;text-align:center;border:1.5px solid var(--border);">
+        <div style="font-size:36px;font-weight:800;color:var(--primary);" id="delTotal">0</div>
+        <div style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">Total Pages</div>
+        <label class="form-label">Page Number to Delete</label>
+        <input type="number" id="delPage" min="1" class="form-input" style="max-width:120px;margin:0 auto;text-align:center;">
+      </div>
+      <button class="btn btn-danger btn-full" id="delBtn" onclick="doDeletePage()" disabled>Delete Page & Download</button>
+    </div>
+  `;
+}
+
+/* ═══════════════════════════════════════
+   TOOL: RESIZE
+═══════════════════════════════════════ */
+function resizeUI() {
+  let imgEl = null;
+  setTimeout(() => {
+    document.getElementById('rzInput').onchange = e => {
+      const f = e.target.files[0]; if (!f) return;
+      imgEl = new Image();
+      imgEl.onload = () => {
+        document.getElementById('rzPrev').src = imgEl.src;
+        document.getElementById('rzPrev').style.display = 'block';
+        document.getElementById('rzPlaceholder').style.display = 'none';
+        document.getElementById('rzOW').textContent = imgEl.naturalWidth;
+        document.getElementById('rzOH').textContent = imgEl.naturalHeight;
+        document.getElementById('rzW').value = imgEl.naturalWidth;
+        document.getElementById('rzH').value = imgEl.naturalHeight;
+        document.getElementById('rzBtn').disabled = false;
+      };
+      imgEl.src = URL.createObjectURL(f);
+    };
+    window.doResize = () => {
+      if (!imgEl) return;
+      const w = parseInt(document.getElementById('rzW').value);
+      const h = parseInt(document.getElementById('rzH').value);
+      const fmt = document.getElementById('rzFmt').value;
+      const c = document.createElement('canvas'); c.width = w; c.height = h;
+      const ctx = c.getContext('2d');
+      if (fmt === 'image/jpeg') { ctx.fillStyle = '#fff'; ctx.fillRect(0,0,w,h); }
+      ctx.drawImage(imgEl,0,0,w,h);
+      const a = document.createElement('a'); a.href = c.toDataURL(fmt, 0.92); a.download = 'resized.' + fmt.split('/')[1]; a.click();
+      showToast('Image downloaded!', 'success');
+    };
+  }, 50);
+  return `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+      <div>
+        <div class="form-group"><label class="form-label">Upload Image</label><input type="file" id="rzInput" accept="image/*" class="form-input" style="padding:8px;"></div>
+        <div style="background:var(--surface2);border-radius:10px;padding:10px;font-size:12px;color:var(--text-muted);margin-bottom:14px;">
+          Original: <strong id="rzOW">–</strong> × <strong id="rzOH">–</strong> px
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+          <div><label class="form-label">Width (px)</label><input type="number" id="rzW" class="form-input" placeholder="800"></div>
+          <div><label class="form-label">Height (px)</label><input type="number" id="rzH" class="form-input" placeholder="600"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Format</label>
+          <select id="rzFmt" class="form-input">
+            <option value="image/png">PNG</option>
+            <option value="image/jpeg">JPEG</option>
+            <option value="image/webp">WebP</option>
+          </select>
+        </div>
+        <button class="btn btn-primary btn-full" id="rzBtn" onclick="doResize()" disabled>Resize & Download</button>
+      </div>
+      <div style="background:var(--surface2);border-radius:14px;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;min-height:220px;overflow:hidden;">
+        <img id="rzPrev" style="max-width:100%;max-height:280px;display:none;border-radius:10px;">
+        <span id="rzPlaceholder" style="color:var(--text-muted);font-size:13px;">Preview here</span>
+      </div>
+    </div>
+  `;
+}
+
+/* ═══════════════════════════════════════
+   TOOL: PASSPORT PHOTO
+═══════════════════════════════════════ */
+function passportUI() {
+  let photo = null;
+  setTimeout(() => {
+    document.getElementById('ppInput').onchange = e => {
+      const f = e.target.files[0]; if (!f) return;
+      photo = new Image();
+      photo.onload = drawPassport;
+      photo.src = URL.createObjectURL(f);
+    };
+    function drawPassport() {
+      const canvas = document.getElementById('ppCanvas');
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#fff'; ctx.fillRect(0,0,canvas.width,canvas.height);
+      // 6×4 inch at 100dpi = 600×400, passport 35×45mm ≈ 138×177px
+      const pw = 138, ph = 177;
+      const cols = 4, rows = 2;
+      const marginX = (600 - cols*pw) / (cols+1);
+      const marginY = (400 - rows*ph) / (rows+1);
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const x = marginX + c*(pw+marginX);
+          const y = marginY + r*(ph+marginY);
+          ctx.fillStyle = '#e2e8f0'; ctx.fillRect(x,y,pw,ph);
+          // Draw photo maintaining aspect ratio
+          const ir = photo.width/photo.height;
+          const pr = pw/ph;
+          let sx,sy,sw,sh;
+          if (ir > pr) { sh=photo.height; sw=sh*pr; sx=(photo.width-sw)/2; sy=0; }
+          else { sw=photo.width; sh=sw/pr; sx=0; sy=(photo.height-sh)/2; }
+          ctx.drawImage(photo,sx,sy,sw,sh,x,y,pw,ph);
+          ctx.strokeStyle='#94a3b8'; ctx.lineWidth=0.5; ctx.strokeRect(x,y,pw,ph);
+        }
+      }
+      ctx.fillStyle='#64748b'; ctx.font='10px DM Sans,sans-serif';
+      ctx.fillText('ToolsLab Passport Photo Layout – 35×45mm × 8 photos – Print on 6×4 inch', 10, 395);
+    }
+    window.downloadPassport = () => {
+      const a=document.createElement('a'); a.href=document.getElementById('ppCanvas').toDataURL(); a.download='passport_photo_sheet.png'; a.click();
+      showToast('Passport photo sheet downloaded!', 'success');
+    };
+  }, 50);
+  return `
+    <div>
+      <div class="form-group"><label class="form-label">Upload Your Photo (clear, front-facing)</label><input type="file" id="ppInput" accept="image/*" class="form-input" style="padding:8px;"></div>
+      <div style="border:1.5px solid var(--border);border-radius:12px;overflow:hidden;background:white;margin-bottom:16px;">
+        <canvas id="ppCanvas" width="600" height="400" style="width:100%;display:block;"></canvas>
+      </div>
+      <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">📌 8 passport photos (35×45mm) on 6×4 inch sheet. Download and print at any photo studio.</p>
+      <button class="btn btn-primary btn-full" onclick="downloadPassport()">Download Print Sheet</button>
+    </div>
+  `;
+}
+
+/* ═══════════════════════════════════════
+   TOOL: RESUME
+═══════════════════════════════════════ */
+function resumeUI() {
+  setTimeout(() => {
+    window.updateResume = () => {
+      const g = id => document.getElementById(id)?.value || '';
+      document.getElementById('rvName').textContent = g('rName') || 'Your Name';
+      document.getElementById('rvTitle').textContent = g('rTitle') || 'Professional Title';
+      document.getElementById('rvContact').textContent = [g('rEmail'),g('rPhone'),g('rLocation')].filter(Boolean).join(' · ') || 'contact@email.com';
+      document.getElementById('rvSummary').textContent = g('rSummary') || 'A dedicated professional...';
+      const mkList = v => v ? v.split('\n').filter(l=>l.trim()).map(l=>`<li style="margin-bottom:4px;">${l}</li>`).join('') : '<li>—</li>';
+      document.getElementById('rvExp').innerHTML = mkList(g('rExp'));
+      document.getElementById('rvEdu').innerHTML = mkList(g('rEdu'));
+      const skills = g('rSkills').split(',').filter(s=>s.trim()).map(s=>`<span class="skill-chip">${s.trim()}</span>`).join('');
+      document.getElementById('rvSkills').innerHTML = skills || '<span class="skill-chip">—</span>';
+    };
+  }, 50);
+  return `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+      <div style="max-height:65vh;overflow-y:auto;padding-right:8px;">
+        <h4 style="margin-bottom:14px;font-size:15px;">Fill Your Details</h4>
+        <div class="form-group"><label class="form-label">Full Name</label><input id="rName" class="form-input" placeholder="Rajesh Kumar" oninput="updateResume()"></div>
+        <div class="form-group"><label class="form-label">Job Title</label><input id="rTitle" class="form-input" placeholder="Software Developer" oninput="updateResume()"></div>
+        <div class="form-group"><label class="form-label">Email</label><input id="rEmail" class="form-input" placeholder="rajesh@email.com" oninput="updateResume()"></div>
+        <div class="form-group"><label class="form-label">Phone</label><input id="rPhone" class="form-input" placeholder="+91 98765 43210" oninput="updateResume()"></div>
+        <div class="form-group"><label class="form-label">Location</label><input id="rLocation" class="form-input" placeholder="Mumbai, India" oninput="updateResume()"></div>
+        <div class="form-group"><label class="form-label">Professional Summary</label><textarea id="rSummary" class="form-input" rows="3" placeholder="Brief professional summary..." oninput="updateResume()"></textarea></div>
+        <div class="form-group"><label class="form-label">Experience (one per line)</label><textarea id="rExp" class="form-input" rows="3" placeholder="2022–Present: Software Dev at ABC Corp" oninput="updateResume()"></textarea></div>
+        <div class="form-group"><label class="form-label">Education (one per line)</label><textarea id="rEdu" class="form-input" rows="2" placeholder="B.Tech Computer Science, 2022" oninput="updateResume()"></textarea></div>
+        <div class="form-group"><label class="form-label">Skills (comma separated)</label><textarea id="rSkills" class="form-input" rows="2" placeholder="JavaScript, Python, React" oninput="updateResume()"></textarea></div>
+        <button class="btn btn-primary btn-full" onclick="window.print()">🖨️ Print / Save as PDF</button>
+      </div>
+      <div class="resume-preview" id="resumePrint">
+        <div style="border-left:4px solid #1e40af;padding-left:16px;margin-bottom:16px;">
+          <h2 id="rvName">Your Name</h2>
+          <div style="color:#2563eb;font-weight:600;font-size:14px;" id="rvTitle">Professional Title</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:4px;" id="rvContact">contact@email.com</div>
+        </div>
+        <div class="rv-section"><h3>Summary</h3><p id="rvSummary" style="font-size:13px;color:var(--text-muted);">—</p></div>
+        <div class="rv-section"><h3>Experience</h3><ul id="rvExp" style="font-size:13px;color:var(--text-muted);padding-left:16px;"></ul></div>
+        <div class="rv-section"><h3>Education</h3><ul id="rvEdu" style="font-size:13px;color:var(--text-muted);padding-left:16px;"></ul></div>
+        <div class="rv-section"><h3>Skills</h3><div id="rvSkills"></div></div>
+      </div>
+    </div>
+  `;
+}
+
+/* ═══════════════════════════════════════
+   TOOL: BIODATA
+═══════════════════════════════════════ */
+function biodataUI() {
+  setTimeout(() => {
+    window.updateBio = () => {
+      const g = id => document.getElementById(id)?.value || '';
+      const set = (id,v) => { const el=document.getElementById(id); if(el) el.textContent = v||'—'; };
+      set('bvName',g('bName')); set('bvDob',g('bDob')); set('bvHeight',g('bHeight'));
+      set('bvReligion',g('bReligion')); set('bvEdu',g('bEdu')); set('bvOcc',g('bOcc'));
+      set('bvAbout',g('bAbout')); set('bvContact',g('bContact'));
+    };
+  }, 50);
+  return `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+      <div style="max-height:65vh;overflow-y:auto;padding-right:8px;">
+        <h4 style="margin-bottom:14px;">Biodata Details</h4>
+        <div class="form-group"><label class="form-label">Full Name</label><input id="bName" class="form-input" placeholder="Priya Sharma" oninput="updateBio()"></div>
+        <div class="form-group"><label class="form-label">Date of Birth</label><input type="date" id="bDob" class="form-input" oninput="updateBio()"></div>
+        <div class="form-group"><label class="form-label">Height</label><input id="bHeight" class="form-input" placeholder='5&apos;5"' oninput="updateBio()"></div>
+        <div class="form-group"><label class="form-label">Religion / Caste</label><input id="bReligion" class="form-input" placeholder="Hindu / Sharma" oninput="updateBio()"></div>
+        <div class="form-group"><label class="form-label">Education</label><input id="bEdu" class="form-input" placeholder="B.Com, Delhi University" oninput="updateBio()"></div>
+        <div class="form-group"><label class="form-label">Occupation</label><input id="bOcc" class="form-input" placeholder="Teacher / Private Job" oninput="updateBio()"></div>
+        <div class="form-group"><label class="form-label">About Family</label><textarea id="bAbout" class="form-input" rows="3" placeholder="Father: Retired Govt. Officer..." oninput="updateBio()"></textarea></div>
+        <div class="form-group"><label class="form-label">Contact Number</label><input id="bContact" class="form-input" placeholder="+91 98765 43210" oninput="updateBio()"></div>
+        <button class="btn btn-primary btn-full" onclick="window.print()">🖨️ Print Biodata</button>
+      </div>
+      <div class="biodata-card" id="biodataPrint" style="max-height:65vh;overflow-y:auto;">
+        <div style="text-align:center;margin-bottom:16px;">
+          <div style="font-size:24px;margin-bottom:4px;">🌸</div>
+          <h2 style="font-size:18px;font-family:'Syne',sans-serif;color:#9f1239;letter-spacing:1px;">Marriage Biodata</h2>
+          <div style="height:2px;background:linear-gradient(90deg,transparent,#9f1239,transparent);margin:8px 0;"></div>
+        </div>
+        <div class="biodata-row"><span class="label">Name</span><span id="bvName">—</span></div>
+        <div class="biodata-row"><span class="label">Date of Birth</span><span id="bvDob">—</span></div>
+        <div class="biodata-row"><span class="label">Height</span><span id="bvHeight">—</span></div>
+        <div class="biodata-row"><span class="label">Religion / Caste</span><span id="bvReligion">—</span></div>
+        <div class="biodata-row"><span class="label">Education</span><span id="bvEdu">—</span></div>
+        <div class="biodata-row"><span class="label">Occupation</span><span id="bvOcc">—</span></div>
+        <div style="padding:10px 0;border-bottom:1px dashed #fce7f3;"><div style="font-weight:600;color:#9f1239;font-size:13px;margin-bottom:4px;">About Family</div><div id="bvAbout" style="font-size:13px;">—</div></div>
+        <div style="padding:10px 0;"><div style="font-weight:600;color:#9f1239;font-size:13px;margin-bottom:4px;">Contact</div><div id="bvContact" style="font-size:13px;font-weight:600;">—</div></div>
+      </div>
+    </div>
+  `;
+}
+
+/* ═══════════════════════════════════════
+   TOOL: ID MAKER
+═══════════════════════════════════════ */
+function idMakerUI() {
+  let photoUrl = null;
+  setTimeout(() => {
+    window.updateId = () => {
+      const g = id => document.getElementById(id)?.value || '';
+      document.getElementById('ivName').textContent = g('iName') || 'Your Name';
+      document.getElementById('ivRole').textContent = g('iRole') || 'Designation';
+      document.getElementById('ivId').textContent = g('iId') || 'ID-0000';
+      document.getElementById('ivOrg').textContent = g('iOrg') || 'Organization Name';
+      document.getElementById('ivDept').textContent = g('iDept') || 'Department';
+    };
+    document.getElementById('iPhoto').onchange = e => {
+      const f = e.target.files[0]; if (!f) return;
+      photoUrl = URL.createObjectURL(f);
+      document.getElementById('ivPhoto').innerHTML = `<img src="${photoUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+    };
+    window.downloadId = () => {
+      html2canvas(document.getElementById('idCardDom'), {scale:2}).then(canvas=>{
+        const a=document.createElement('a'); a.href=canvas.toDataURL('image/png'); a.download='id_card.png'; a.click();
+        showToast('ID Card downloaded!', 'success');
+      });
+    };
+  }, 50);
+  return `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start;">
+      <div>
+        <h4 style="margin-bottom:14px;">ID Card Details</h4>
+        <div class="form-group"><label class="form-label">Full Name</label><input id="iName" class="form-input" placeholder="Rajesh Kumar" oninput="updateId()"></div>
+        <div class="form-group"><label class="form-label">Designation</label><input id="iRole" class="form-input" placeholder="Senior Officer" oninput="updateId()"></div>
+        <div class="form-group"><label class="form-label">ID Number</label><input id="iId" class="form-input" placeholder="EMP-2025-001" oninput="updateId()"></div>
+        <div class="form-group"><label class="form-label">Organization</label><input id="iOrg" class="form-input" placeholder="Government of India" oninput="updateId()"></div>
+        <div class="form-group"><label class="form-label">Department</label><input id="iDept" class="form-input" placeholder="Finance Department" oninput="updateId()"></div>
+        <div class="form-group"><label class="form-label">Photo</label><input type="file" id="iPhoto" accept="image/*" class="form-input" style="padding:8px;"></div>
+        <button class="btn btn-primary btn-full" onclick="downloadId()">Download ID Card PNG</button>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:16px;">
+        <div id="idCardDom" style="width:320px;background:linear-gradient(135deg,#1e3a8a,#2563eb,#0ea5e9);border-radius:20px;padding:24px;color:#fff;box-shadow:0 16px 40px rgba(37,99,235,0.35);position:relative;overflow:hidden;">
+          <div style="position:absolute;top:-40px;right:-40px;width:120px;height:120px;background:rgba(255,255,255,0.08);border-radius:50%;"></div>
+          <div style="position:absolute;bottom:-20px;left:-20px;width:80px;height:80px;background:rgba(255,255,255,0.05);border-radius:50%;"></div>
+          <div style="text-align:center;margin-bottom:14px;">
+            <div id="ivPhoto" style="width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,0.2);margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:28px;border:3px solid rgba(255,255,255,0.4);overflow:hidden;">👤</div>
+            <div style="font-size:18px;font-weight:800;font-family:'Syne',sans-serif;" id="ivName">Your Name</div>
+            <div style="font-size:12px;opacity:0.85;margin-top:2px;" id="ivRole">Designation</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.12);border-radius:10px;padding:12px;font-size:12px;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="opacity:0.75;">ID No</span><span style="font-weight:700;font-family:monospace;" id="ivId">ID-0000</span></div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="opacity:0.75;">Organization</span><span id="ivOrg">Org Name</span></div>
+            <div style="display:flex;justify-content:space-between;"><span style="opacity:0.75;">Department</span><span id="ivDept">Dept</span></div>
+          </div>
+          <div style="text-align:center;margin-top:12px;font-size:10px;opacity:0.6;">ToolsLab · ID Card</div>
+        </div>
+        <p style="font-size:12px;color:var(--text-muted);text-align:center;">⚠️ For display purposes only — not an official ID</p>
+      </div>
+    </div>
+  `;
+}
+
+/* ═══════════════════════════════════════
+   TOOL: POSTER
+═══════════════════════════════════════ */
+function posterUI() {
+  const themes = {
+    blue: 'linear-gradient(135deg,#1e40af,#2563eb)',
+    purple: 'linear-gradient(135deg,#6d28d9,#8b5cf6)',
+    red: 'linear-gradient(135deg,#be123c,#e11d48)',
+    green: 'linear-gradient(135deg,#065f46,#059669)',
+    orange: 'linear-gradient(135deg,#c2410c,#ea580c)',
+    dark: 'linear-gradient(135deg,#0f172a,#1e293b)',
+  };
+  setTimeout(() => {
+    window.updatePoster = () => {
+      const g = id => document.getElementById(id)?.value || '';
+      document.getElementById('pvHead').textContent = g('pHead') || 'Your Heading';
+      document.getElementById('pvSub').textContent = g('pSub') || 'Subheading Line Here';
+      document.getElementById('pvBody').textContent = g('pBody') || 'Enter your description, offer details, or announcement text here.';
+      document.getElementById('pvContact').textContent = g('pContact') || '';
+      const theme = g('pTheme');
+      document.getElementById('posterDom').style.background = themes[theme] || themes.blue;
+    };
+    window.downloadPoster = () => {
+      html2canvas(document.getElementById('posterDom'), {scale:2}).then(canvas=>{
+        const a=document.createElement('a'); a.href=canvas.toDataURL('image/png'); a.download='poster.png'; a.click();
+        showToast('Poster downloaded!', 'success');
+      });
+    };
+  }, 50);
+  return `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+      <div>
+        <div class="form-group"><label class="form-label">Heading</label><input id="pHead" class="form-input" placeholder="Big Sale! 50% Off" oninput="updatePoster()"></div>
+        <div class="form-group"><label class="form-label">Subheading</label><input id="pSub" class="form-input" placeholder="Limited Time Offer" oninput="updatePoster()"></div>
+        <div class="form-group"><label class="form-label">Description</label><textarea id="pBody" class="form-input" rows="3" placeholder="All products available at discounted prices..." oninput="updatePoster()"></textarea></div>
+        <div class="form-group"><label class="form-label">Contact / Footer</label><input id="pContact" class="form-input" placeholder="+91 98765 43210 | www.yourshop.com" oninput="updatePoster()"></div>
+        <div class="form-group">
+          <label class="form-label">Theme Color</label>
+          <select id="pTheme" class="form-input" onchange="updatePoster()">
+            <option value="blue">Blue Professional</option>
+            <option value="purple">Purple Creative</option>
+            <option value="red">Red Bold</option>
+            <option value="green">Green Fresh</option>
+            <option value="orange">Orange Energetic</option>
+            <option value="dark">Dark Premium</option>
+          </select>
+        </div>
+        <button class="btn btn-primary btn-full" onclick="downloadPoster()">Download Poster PNG</button>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:center;">
+        <div id="posterDom" style="width:240px;height:320px;background:linear-gradient(135deg,#1e40af,#2563eb);border-radius:16px;padding:28px 20px;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;box-shadow:0 12px 32px rgba(0,0,0,0.2);">
+          <div style="font-size:28px;font-weight:800;font-family:'Syne',sans-serif;margin-bottom:8px;line-height:1.2;" id="pvHead">Your Heading</div>
+          <div style="font-size:13px;opacity:0.9;margin-bottom:16px;" id="pvSub">Subheading</div>
+          <div style="width:40px;height:2px;background:rgba(255,255,255,0.5);margin-bottom:16px;"></div>
+          <div style="font-size:12px;opacity:0.85;line-height:1.6;" id="pvBody">Description text here</div>
+          <div style="margin-top:20px;font-size:11px;opacity:0.7;font-weight:600;" id="pvContact"></div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/* ═══════════════════════════════════════
+   TOOL: APPLICATION MAKER
+═══════════════════════════════════════ */
+function applicationUI() {
+  setTimeout(() => {
+    window.updateApp = () => {
+      const g = id => document.getElementById(id)?.value || '';
+      document.getElementById('apDate').textContent = g('appDate') || new Date().toLocaleDateString('en-IN');
+      document.getElementById('apTo').textContent = g('appTo') || 'The Manager / Authority';
+      document.getElementById('apSub').textContent = g('appSub') || 'Subject of Application';
+      document.getElementById('apBody').textContent = g('appBody') || 'Respected Sir/Madam,\n\nI am writing to bring to your kind attention...';
+      document.getElementById('apFrom').textContent = g('appFrom') || 'Your Name';
+    };
+  }, 50);
+  return `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+      <div>
+        <div class="form-group"><label class="form-label">Date</label><input type="date" id="appDate" class="form-input" oninput="updateApp()"></div>
+        <div class="form-group"><label class="form-label">To (Recipient)</label><input id="appTo" class="form-input" placeholder="The District Collector, Mumbai" oninput="updateApp()"></div>
+        <div class="form-group"><label class="form-label">Subject</label><input id="appSub" class="form-input" placeholder="Application for Leave / Certificate" oninput="updateApp()"></div>
+        <div class="form-group"><label class="form-label">Body</label><textarea id="appBody" class="form-input" rows="6" placeholder="Write your application body here..." oninput="updateApp()"></textarea></div>
+        <div class="form-group"><label class="form-label">Your Name</label><input id="appFrom" class="form-input" placeholder="Rajesh Kumar" oninput="updateApp()"></div>
+        <button class="btn btn-primary btn-full" onclick="window.print()">🖨️ Print Application</button>
+      </div>
+      <div style="background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:24px;font-size:13px;max-height:65vh;overflow-y:auto;">
+        <div style="text-align:right;margin-bottom:16px;color:var(--text-muted);" id="apDate">Date</div>
+        <div style="margin-bottom:16px;"><strong>To,</strong><br><span id="apTo">Recipient</span></div>
+        <div style="margin-bottom:16px;"><strong>Subject:</strong> <span id="apSub">Subject</span></div>
+        <div style="line-height:1.8;white-space:pre-line;margin-bottom:24px;" id="apBody">Body</div>
+        <div style="margin-top:32px;">
+          <div>Yours faithfully,</div>
+          <div style="margin-top:12px;font-weight:700;" id="apFrom">Your Name</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/* ═══════════════════════════════════════
+   TOOL: CARD PRINT LAYOUTS
+═══════════════════════════════════════ */
+function cardPrintUI(type) {
+  const configs = {
+    voter: {
+      title: '🗳️ Election / Voter ID Card',
+      color: '#1e40af',
+      fields: ['Voter Name','Father/Husband Name','Age','Gender','Address','EPIC No.'],
+      icon: '🗳️'
+    },
+    health: {
+      title: '🏥 Health Plan Card',
+      color: '#065f46',
+      fields: ['Patient Name','Beneficiary ID','Age','Policy Number','Covered Under'],
+      icon: '🏥'
+    },
+    tax: {
+      title: '💰 Tax ID / Income Tax Card',
+      color: '#7c2d12',
+      fields: ['Name','PAN Number','Date of Birth','Father\'s Name'],
+      icon: '💰'
+    },
+    driving: {
+      title: '🚗 Driving Licence Card',
+      color: '#1e3a5f',
+      fields: ['Name','DL Number','Date of Birth','Valid Till','Vehicle Class','Blood Group'],
+      icon: '🚗'
+    },
+    food: {
+      title: '🍚 Food Subsidy / Ration Card',
+      color: '#78350f',
+      fields: ['Card Holder Name','RC Number','Category','Members','Address','Dealer Name'],
+      icon: '🍚'
+    },
+  };
+  const cfg = configs[type] || configs.voter;
+  setTimeout(() => {
+    window.updateCard = () => {
+      cfg.fields.forEach((f, i) => {
+        const el = document.getElementById(`cvv${i}`);
+        const inp = document.getElementById(`cvi${i}`);
+        if (el && inp) el.textContent = inp.value || f;
+      });
+    };
+    window.downloadCard = () => {
+      html2canvas(document.getElementById('cardPreview'), {scale:2}).then(canvas=>{
+        const a=document.createElement('a'); a.href=canvas.toDataURL(); a.download='card_print.png'; a.click();
+        showToast('Card downloaded!', 'success');
+      });
+    };
+  }, 50);
+  const formFields = cfg.fields.map((f,i) =>
+    `<div class="form-group"><label class="form-label">${f}</label><input id="cvi${i}" class="form-input" placeholder="${f}" oninput="updateCard()"></div>`
+  ).join('');
+  const cardRows = cfg.fields.map((f,i) =>
+    `<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.15);font-size:12px;"><span style="opacity:0.75;">${f}</span><span style="font-weight:600;" id="cvv${i}">${f}</span></div>`
+  ).join('');
+  return `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start;">
+      <div style="max-height:65vh;overflow-y:auto;padding-right:8px;">
+        <h4 style="margin-bottom:14px;">${cfg.title}</h4>
+        ${formFields}
+        <button class="btn btn-primary btn-full" onclick="downloadCard()">Download Card PNG</button>
+      </div>
+      <div>
+        <div id="cardPreview" style="background:linear-gradient(135deg,${cfg.color},${cfg.color}dd);border-radius:16px;padding:20px;color:#fff;box-shadow:0 12px 28px rgba(0,0,0,0.25);margin-bottom:12px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+            <div>
+              <div style="font-size:10px;opacity:0.7;margin-bottom:2px;">Government of India</div>
+              <div style="font-weight:800;font-family:'Syne',sans-serif;font-size:15px;">${cfg.title}</div>
+            </div>
+            <div style="font-size:28px;">${cfg.icon}</div>
+          </div>
+          ${cardRows}
+          <div style="text-align:center;margin-top:12px;font-size:10px;opacity:0.5;">⚠️ Display/Print Layout Only — Not an Official Document</div>
+        </div>
+        <p style="font-size:12px;color:var(--text-muted);text-align:center;">Fill details to preview. Download for printing.</p>
+      </div>
+    </div>
+  `;
+}
+
+/* ═══════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════ */
+function fileToDataUrl(file) {
+  return new Promise(res => { const r=new FileReader(); r.onload=e=>res(e.target.result); r.readAsDataURL(file); });
+}
+function downloadBlob(bytes, filename, type) {
+  const blob = new Blob([bytes], {type});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download=filename; a.click();
+  URL.revokeObjectURL(url);
+}
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = (type==='success'?'✅ ':'❌ ') + msg;
+  t.className = `toast ${type} show`;
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 3500);
+}
+function submitContact() {
+  const name = document.getElementById('ctName').value.trim();
+  const email = document.getElementById('ctEmail').value.trim();
+  const msg = document.getElementById('ctMessage').value.trim();
+  if (!name || !email || !msg) { showToast('Please fill all required fields', 'error'); return; }
+  if (!email.includes('@')) { showToast('Enter a valid email address', 'error'); return; }
+  showToast('Message sent! We will reply within 24 hours.', 'success');
+  document.getElementById('ctName').value = '';
+  document.getElementById('ctEmail').value = '';
+  document.getElementById('ctMessage').value = '';
+}
+
+/* ═══════════════════════════════════════
+   SEARCH
+═══════════════════════════════════════ */
+document.getElementById('searchInput').addEventListener('input', e => {
+  const q = e.target.value.toLowerCase().trim();
+  if (!q) {
+    document.querySelectorAll('[data-section]').forEach(s => s.style.display = '');
+    document.querySelectorAll('.tool-card').forEach(c => c.style.display = '');
+    return;
+  }
+  let anyVisible = false;
+  document.querySelectorAll('[data-section]').forEach(section => {
+    let sectionVisible = false;
+    section.querySelectorAll('.tool-card').forEach(card => {
+      const matches = card.dataset.name.includes(q);
+      card.style.display = matches ? '' : 'none';
+      if (matches) sectionVisible = true;
+    });
+    section.style.display = sectionVisible ? '' : 'none';
+    if (sectionVisible) anyVisible = true;
+  });
+});
+
+/* ═══════════════════════════════════════
+   INIT
+═══════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+  renderTools();
+  renderFAQs();
+  document.getElementById('yearFoot').textContent = new Date().getFullYear();
+});
+</script>
+</body>
+</html>
